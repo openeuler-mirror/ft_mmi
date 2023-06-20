@@ -1,0 +1,505 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//foundation/multimodalinput/input/multimodalinput_mini.gni")
+
+gen_src_dir = "//third_party/libinput"
+gen_dst_dir = root_out_dir + "/diff_libinput_mmi"
+patches_root_dir = "//foundation/multimodalinput/input/patch"
+build_gn_dir = "$patches_root_dir/diff_libinput_mmi/libinput"
+
+action("apply_patch") {
+  visibility = [ ":*" ]
+  script = "$patches_root_dir/apply_patch.sh"
+  inputs = [ "$gen_src_dir" ]
+  outputs = [
+    "$gen_dst_dir/src/filter.c",
+    "$gen_dst_dir/src/filter-flat.c",
+    "$gen_dst_dir/src/filter-low-dpi.c",
+    "$gen_dst_dir/src/filter-mouse.c",
+    "$gen_dst_dir/src/filter-touchpad.c",
+    "$gen_dst_dir/src/filter-touchpad-x230.c",
+    "$gen_dst_dir/src/filter-tablet.c",
+    "$gen_dst_dir/src/filter-trackpoint.c",
+    "$gen_dst_dir/src/filter-touchpad-flat.c",
+    "$gen_dst_dir/src/libinput.c",
+    "$gen_dst_dir/src/evdev.c",
+    "$gen_dst_dir/src/evdev-debounce.c",
+    "$gen_dst_dir/src/evdev-fallback.c",
+    "$gen_dst_dir/src/evdev-totem.c",
+    "$gen_dst_dir/src/evdev-joystick.c",
+    "$gen_dst_dir/src/evdev-middle-button.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-tap.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-thumb.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-buttons.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-edge-scroll.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-gestures.c",
+    "$gen_dst_dir/src/evdev-tablet.c",
+    "$gen_dst_dir/src/evdev-tablet-pad.c",
+    "$gen_dst_dir/src/evdev-tablet-pad-leds.c",
+    "$gen_dst_dir/src/path-seat.c",
+    "$gen_dst_dir/src/udev-seat.c",
+    "$gen_dst_dir/src/timer.c",
+    "$gen_dst_dir/src/libinput-util.c",
+    "$gen_dst_dir/src/quirks.c",
+    "$gen_dst_dir/src/util-list.c",
+    "$gen_dst_dir/src/util-prop-parsers.c",
+    "$gen_dst_dir/src/util-ratelimit.c",
+    "$gen_dst_dir/src/util-strings.c",
+    "$gen_dst_dir/tools/shared.h",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/libinput-debug-events.c",
+    "$gen_dst_dir/tools/libinput-list-devices.c",
+    "$gen_dst_dir/tools/libinput-debug-tablet.c",
+    "$gen_dst_dir/hm_src/hm_missing.h",
+    "$gen_dst_dir/hm_src/hm_missing.c",
+    "$gen_dst_dir/tools/libinput-record.c",
+    "$gen_dst_dir/tools/libinput-analyze.c",
+    "$gen_dst_dir/tools/libinput-measure.c",
+    "$gen_dst_dir/tools/libinput-quirks.c",
+  ]
+
+  args = [
+    rebase_path(gen_src_dir, root_build_dir),
+    rebase_path(gen_dst_dir, root_build_dir),
+    rebase_path(build_gn_dir, root_build_dir),
+  ]
+}
+
+config("libinput-third_config") {
+  visibility = [ ":*" ]
+
+  include_dirs = [
+    "$gen_dst_dir/src",
+    "$gen_dst_dir/include",
+    "$gen_dst_dir/hm_src",
+  ]
+
+  cflags = [
+    "-Wno-unused-parameter",
+    "-Wno-implicit-int",
+    "-Wno-return-type",
+    "-Wno-unused-function",
+    "-Wno-string-conversion",
+    "-DHAVE_LIBINPUT_LOG_CONSOLE_ENABLE",
+    "-DHAVE_LIBINPUT_LOG_ENABLE",
+  ]
+}
+
+config("libinput-third_public_config") {
+  include_dirs = [
+    "$gen_dst_dir/export_include",
+    "$gen_dst_dir/include",
+    "//third_party/FreeBSD/sys/dev/evdev",
+    "$gen_dst_dir/src",
+  ]
+
+  cflags = []
+}
+
+ohos_source_set("patch_gen_libinput-third-mmi") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/src/evdev-debounce.c",
+    "$gen_dst_dir/src/evdev-fallback.c",
+    "$gen_dst_dir/src/evdev-joystick.c",
+    "$gen_dst_dir/src/evdev-middle-button.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-buttons.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-edge-scroll.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-gestures.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-tap.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad-thumb.c",
+    "$gen_dst_dir/src/evdev-mt-touchpad.c",
+    "$gen_dst_dir/src/evdev-tablet-pad-leds.c",
+    "$gen_dst_dir/src/evdev-tablet-pad.c",
+    "$gen_dst_dir/src/evdev-tablet.c",
+    "$gen_dst_dir/src/evdev-totem.c",
+    "$gen_dst_dir/src/evdev.c",
+    "$gen_dst_dir/src/filter-flat.c",
+    "$gen_dst_dir/src/filter-low-dpi.c",
+    "$gen_dst_dir/src/filter-mouse.c",
+    "$gen_dst_dir/src/filter-tablet.c",
+    "$gen_dst_dir/src/filter-touchpad-flat.c",
+    "$gen_dst_dir/src/filter-touchpad-x230.c",
+    "$gen_dst_dir/src/filter-touchpad.c",
+    "$gen_dst_dir/src/filter-trackpoint.c",
+    "$gen_dst_dir/src/filter.c",
+    "$gen_dst_dir/src/libinput-util.c",
+    "$gen_dst_dir/src/libinput.c",
+    "$gen_dst_dir/src/path-seat.c",
+    "$gen_dst_dir/src/quirks.c",
+    "$gen_dst_dir/src/timer.c",
+    "$gen_dst_dir/src/udev-seat.c",
+    "$gen_dst_dir/src/util-list.c",
+    "$gen_dst_dir/src/util-prop-parsers.c",
+    "$gen_dst_dir/src/util-ratelimit.c",
+    "$gen_dst_dir/src/util-strings.c",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_shared_library("libinput-third-mmi") {
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":patch_gen_libinput-third-mmi" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_source_set("patch_gen_libinput-debug") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/tools/libinput-debug-events.c",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/shared.h",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_executable("libinput-debug-mmi") {
+  install_enable = true
+
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [
+    ":libinput-third-mmi",
+    ":patch_gen_libinput-debug",
+  ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_source_set("patch_gen_libinput-list") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/tools/libinput-list-devices.c",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/shared.h",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_executable("libinput-list-mmi") {
+  install_enable = true
+
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [
+    ":libinput-third-mmi",
+    ":patch_gen_libinput-list",
+  ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_source_set("patch_gen_libinput-tablet") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/tools/libinput-debug-tablet.c",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/shared.h",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_executable("libinput-tablet-mmi") {
+  install_enable = true
+
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [
+    ":libinput-third-mmi",
+    ":patch_gen_libinput-tablet",
+  ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_source_set("patch_gen_libinput-record") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/hm_src/hm_missing.c",
+    "$gen_dst_dir/tools/libinput-record.c",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/shared.h",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_executable("libinput-record-mmi") {
+  install_enable = true
+
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [
+    ":libinput-third-mmi",
+    ":patch_gen_libinput-record",
+  ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_source_set("patch_gen_libinput-analyze") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/tools/libinput-analyze.c",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/shared.h",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_executable("libinput-analyze-mmi") {
+  install_enable = true
+
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [
+    ":libinput-third-mmi",
+    ":patch_gen_libinput-analyze",
+  ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_source_set("patch_gen_libinput-measure") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/tools/libinput-measure.c",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/shared.h",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_executable("libinput-measure-mmi") {
+  install_enable = true
+
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [
+    ":libinput-third-mmi",
+    ":patch_gen_libinput-measure",
+  ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_source_set("patch_gen_libinput-quirks") {
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+  sources = [
+    "$gen_dst_dir/tools/libinput-quirks.c",
+    "$gen_dst_dir/tools/shared.c",
+    "$gen_dst_dir/tools/shared.h",
+  ]
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [ ":apply_patch" ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+}
+
+ohos_executable("libinput-quirks-mmi") {
+  install_enable = true
+
+  sources = []
+
+  configs = [ ":libinput-third_config" ]
+
+  public_configs = [ ":libinput-third_public_config" ]
+
+  deps = [
+    ":libinput-third-mmi",
+    ":patch_gen_libinput-quirks",
+  ]
+
+  public_deps = [
+    "//third_party/eudev:libudev",
+    "//third_party/libevdev:libevdev",
+    "//third_party/mtdev:libmtdev",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}

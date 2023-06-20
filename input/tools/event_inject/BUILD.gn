@@ -1,0 +1,162 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/test.gni")
+import("//foundation/multimodalinput/input/multimodalinput_mini.gni")
+module_output_path = "multimodalinput/unit_out"
+
+config("event_injection_config") {
+  visibility = [ ":*" ]
+
+  include_dirs = [
+    "include",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
+    "//foundation/multimodalinput/input/util/common/include",
+    "//foundation/multimodalinput/input/interfaces/native/innerkits/common/include",
+  ]
+}
+
+config("event_injection_public_config") {
+  include_dirs = [
+    "include",
+    "//third_party/FreeBSD/sys/dev/evdev",
+    "//foundation/multimodalinput/input/util/common/include",
+    "//foundation/multimodalinput/input/interfaces/native/innerkits/common/include",
+    "//third_party/cJSON",
+  ]
+}
+
+ohos_source_set("event-injection") {
+  sources = [
+    "src/device_base.cpp",
+    "src/get_device_node.cpp",
+    "src/get_device_object.cpp",
+    "src/injection_event_dispatch.cpp",
+    "src/injection_tools_help_func.cpp",
+    "src/input_parse.cpp",
+    "src/manage_inject_device.cpp",
+    "src/processing_finger_device.cpp",
+    "src/processing_game_pad_device.cpp",
+    "src/processing_joystick_device.cpp",
+    "src/processing_keyboard_device.cpp",
+    "src/processing_mouse_device.cpp",
+    "src/processing_pad_device.cpp",
+    "src/processing_pen_device.cpp",
+    "src/processing_touch_screen_device.cpp",
+  ]
+
+  configs = [
+    ":event_injection_config",
+    ":event_injection_public_config",
+  ]
+
+  deps = [
+    "//foundation/multimodalinput/input/patch/diff_libinput_mmi:libinput-third-mmi",
+    "//foundation/multimodalinput/input/service/connect_manager:mmi_connect_manager_proxy",
+    "//foundation/multimodalinput/input/service/filter:mmi_event_filter_service",
+    "//foundation/multimodalinput/input/util:libmmi-util",
+    "//third_party/cJSON:cjson",
+  ]
+
+  external_deps = [ "ipc:ipc_core" ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_unittest("ut-event-injection-out") {
+  module_out_path = module_output_path
+  include_dirs = [
+    "//commonlibrary/c_utils/base/include",
+    "//third_party/googletest/googletest/include",
+    "//third_party/cJSON",
+    "${mmi_path}/frameworks/proxy/event_handler",
+    "${mmi_path}/frameworks/proxy/event_handler/include",
+    "${mmi_path}/frameworks/proxy/module_loader",
+    "${mmi_path}/frameworks/proxy/module_loader/include",
+    "${mmi_path}/util/common",
+    "${mmi_path}/util/common/include",
+    "${mmi_path}/util/network",
+    "${mmi_path}/util/network/include",
+    "${mmi_path}/util/socket",
+    "${mmi_path}/util/socket/include",
+    "${mmi_path}/frameworks/proxy/event_handle",
+    "${mmi_path}/frameworks/proxy/event_handle/include",
+    "${mmi_path}/frameworks/proxy/module_loader",
+    "${mmi_path}/frameworks/proxy/module_loader/include",
+    "${mmi_path}/interfaces/native/innerkits/common/include",
+    "${mmi_path}/interfaces/native/innerkits/proxy/include",
+    "${mmi_path}/interfaces/native/innerkits/event/include",
+    "${mmi_path}/service/include",
+    "${mmi_path}/service/device_scalability/include",
+    "${mmi_path}/service/event_dispatch/include",
+    "${mmi_path}/service/event_handler/include",
+    "${mmi_path}/service/event_standard/include",
+    "${mmi_path}/service/libinput_adapter/include",
+    "${mmi_path}/service/message_handle/include",
+    "${mmi_path}/service/module_loader/include",
+    "${mmi_path}/service/window_manager/include",
+    "${mmi_path}/tools/event_inject/include",
+    "${mmi_path}/uinput",
+    "$root_out_dir/diff_libinput_mmi/export_include",
+  ]
+
+  sources = [
+    "test/device_base_test.cpp",
+    "test/get_device_node_test.cpp",
+    "test/get_device_object_test.cpp",
+    "test/injection_tools_help_func_test.cpp",
+    "test/processing_finger_device_test.cpp",
+    "test/processing_game_pad_device_test.cpp",
+    "test/processing_joystick_device_test.cpp",
+    "test/processing_keyboard_device_test.cpp",
+    "test/processing_mouse_device_test.cpp",
+    "test/processing_pad_device_test.cpp",
+    "test/processing_pen_device_test.cpp",
+    "test/processing_touch_screen_device_test.cpp",
+  ]
+
+  deps = [
+    "${mmi_path}/frameworks/proxy:libmmi-client",
+    "${mmi_path}/service:libmmi-server",
+    "${mmi_path}/tools/event_inject:event-injection",
+    "${mmi_path}/util:libmmi-util",
+    "//foundation/multimodalinput/input/patch/diff_libinput_mmi:libinput-third-mmi",
+    "//third_party/cJSON:cjson",
+    "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+ohos_executable("mmi-event-injection") {
+  sources = [ "src/mmi_event_simulate_main.cpp" ]
+
+  configs = [ ":event_injection_public_config" ]
+
+  deps = [
+    "//foundation/multimodalinput/input/patch/diff_libinput_mmi:libinput-third-mmi",
+    "//foundation/multimodalinput/input/tools/event_inject:event-injection",
+    "//foundation/multimodalinput/input/util:libmmi-util",
+  ]
+
+  install_enable = true
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
