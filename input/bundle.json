@@ -1,0 +1,118 @@
+{
+  "name": "@ohos/multimodalinput",
+  "description": "Provide input capabilities",
+  "version": "3.1",
+  "license": "Apache License 2.0",
+  "segment": {
+    "destPath": "foundation/multimodalinput/input/"
+  },
+  "component": {
+    "name": "input",
+    "subsystem": "multimodalinput",
+    "syscap": [
+      "SystemCapability.MultimodalInput.Input.InputConsumer",
+      "SystemCapability.MultimodalInput.Input.InputDevice",
+      "SystemCapability.MultimodalInput.Input.Core",
+      "SystemCapability.MultimodalInput.Input.InputSimulator",
+      "SystemCapability.MultimodalInput.Input.InputMonitor",
+      "SystemCapability.MultimodalInput.Input.Pointer",
+      "SystemCapability.MultimodalInput.Input.Cooperator"
+    ],
+    "features": [
+      "input_feature_combination_key",
+      "input_feature_pointer_drawing",
+      "input_feature_interceptor",
+      "input_feature_monitor",
+      "input_feature_keyboard",
+      "input_feature_mouse",
+      "input_feature_touchscreen",
+      "input_feature_input_device",
+      "input_feature_input_cooperation"
+    ],
+    "adapted_system_type": [
+      "standard"
+    ],
+    "rom": "5120KB",
+    "ram": "5120KB",
+    "hisysevent_config":[
+      "//foundation/multimodalinput/input/service/hisysevent.yaml"
+    ],
+    "deps": {
+      "components": [
+        "window_manager",
+        "hisysevent_native",
+        "startup_l2",
+        "napi",
+        "c_utils",
+        "ipc",
+        "hitrace_native",
+        "resource_schedule_service",
+        "eventhandler",
+        "multimedia_image_framework",
+        "graphic_standard",
+        "drivers_interface_input",
+        "multimodalinput",
+        "safwk",
+        "libuv",
+        "ability_runtime",
+        "access_token",
+        "hiviewdfx_hilog_native",
+        "ability_base",
+        "samgr",
+        "common"
+      ],
+      "third_party": [
+        "node",
+        "libuv",
+        "json"
+      ]
+    },
+    "build": {
+      "group_type": {
+        "base_group": [
+          "//foundation/multimodalinput/input:multimodalinput_mmi_base"
+        ],
+        "fwk_group": [
+          "//foundation/multimodalinput/input:multimodalinput_mmi_frameworks",
+          "//foundation/multimodalinput/input:input_jsapi_group"
+        ],
+        "service_group": [
+          "//foundation/multimodalinput/input:multimodalinput_mmi_service",
+          "//foundation/multimodalinput/input/sa_profile:multimodalinput_sa_profile",
+          "//foundation/multimodalinput/input:multimodalinput.rc",
+          "//foundation/multimodalinput/input/patch:patch_packages",
+          "//third_party/eudev:libudev",
+          "//third_party/eudev:udevd",
+          "//third_party/eudev:udevadm",
+          "//third_party/eudev:udevd.rc",
+          "//third_party/eudev:udev_conf",
+          "//third_party/eudev:udev_touchscreen_rule",
+          "//third_party/eudev:udev_vk_rule",
+          "//third_party/mtdev:libmtdev",
+          "//third_party/libevdev:libevdev",
+          "//foundation/multimodalinput/input:uinput_inject",
+          "//foundation/multimodalinput/input:mmi_uinput.rc"
+        ]
+      },
+      "inner_kits": [
+        {
+          "name": "//foundation/multimodalinput/input/frameworks/proxy:libmmi-client",
+          "header": {
+            "header_files": [
+              "proxy/include/display_info.h",
+              "proxy/include/input_manager.h",
+              "event/include/key_event.h",
+              "event/include/pointer_event.h",
+              "event/include/input_event.h"
+            ],
+            "header_base": "//foundation/multimodalinput/input/interfaces/native/innerkits"
+          },
+          "type": "so"
+        }
+      ],
+      "test": [
+        "//foundation/multimodalinput/input:mmi_tests"
+      ]
+    }
+  }
+}

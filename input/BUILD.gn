@@ -1,0 +1,150 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//foundation/multimodalinput/input/multimodalinput_mini.gni")
+
+ohos_prebuilt_etc("mmi_uinput.rc") {
+  source = "mmi_uinput.rc"
+  relative_install_dir = "init"
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_prebuilt_etc("multimodalinput.rc") {
+  source = "multimodalinput.cfg"
+  relative_install_dir = "init"
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+ohos_executable("uinput_inject") {
+  install_enable = true
+
+  sources = [
+    "uinput/hdf_device_event_dispatch.cpp",
+    "uinput/hdf_device_event_manager.cpp",
+    "uinput/inject_thread.cpp",
+    "uinput/keyboard_inject.cpp",
+    "uinput/virtual_device.cpp",
+    "uinput/virtual_keyboard.cpp",
+    "uinput/virtual_touch_screen.cpp",
+  ]
+
+  include_dirs = [
+    "//foundation/multimodalinput/input/util/common/include",
+    "//foundation/multimodalinput/input/interfaces/native/innerkits/common/include",
+    "//foundation/multimodalinput/input/test/unittest/common/include",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "drivers_interface_input:hdi_input",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
+
+  part_name = "input"
+  subsystem_name = "multimodalinput"
+}
+
+config("multimodalinput_mmi_public_config") {
+  include_dirs = [ "util/common/include/" ]
+}
+
+group("multimodalinput_mmi_base") {
+  deps = []
+}
+
+group("multimodalinput_mmi_frameworks") {
+  deps = [ "frameworks/proxy:libmmi-client" ]
+}
+
+group("multimodalinput_mmi_service") {
+  deps = [
+    "service:libmmi-server",
+    "tools/inject_event:uinput",
+  ]
+}
+
+group("input_jsapi_group") {
+  deps = []
+  if (support_jsapi) {
+    deps += [
+      "frameworks/napi/key_code:keycode",
+      "frameworks/napi/key_event:keyevent",
+      "frameworks/napi/mouse_event:mouseevent",
+      "frameworks/napi/touch_event:touchevent",
+    ]
+    if (input_feature_monitor) {
+      deps += [ "frameworks/napi/input_monitor:inputmonitor" ]
+    }
+    if (input_feature_mouse) {
+      deps += [ "frameworks/napi/pointer:pointer" ]
+    }
+    if (input_feature_keyboard) {
+      deps += [
+        "frameworks/napi/input_consumer:inputconsumer",
+        "frameworks/napi/input_event_client:inputeventclient",
+      ]
+    }
+    if (input_feature_input_device) {
+      deps += [ "frameworks/napi/input_device:inputdevice" ]
+    }
+    if (input_feature_input_cooperation) {
+      deps += [ "frameworks/napi/input_device_cooperate:inputdevicecooperate" ]
+    }
+  }
+}
+
+group("mmi_debug_tools") {
+  deps = [
+    "patch/diff_libinput_mmi:libinput-analyze-mmi",
+    "patch/diff_libinput_mmi:libinput-debug-mmi",
+    "patch/diff_libinput_mmi:libinput-list-mmi",
+    "patch/diff_libinput_mmi:libinput-measure-mmi",
+    "patch/diff_libinput_mmi:libinput-quirks-mmi",
+    "patch/diff_libinput_mmi:libinput-record-mmi",
+    "patch/diff_libinput_mmi:libinput-tablet-mmi",
+    "tools/event_inject:mmi-event-injection",
+    "tools/vuinput:vuinput",
+    "//third_party/eudev:udevadm",
+  ]
+}
+
+group("ut_mmi_debug_tools") {
+  testonly = true
+  deps = [
+    "tools/event_inject:ut-event-injection-out",
+    "tools/vuinput:ut-virtual-device-out",
+  ]
+}
+
+group("mmi_tests_manual") {
+  testonly = true
+  deps = [ "service:TransformPointTest" ]
+}
+
+group("mmi_tests") {
+  testonly = true
+  deps = [
+    "frameworks/proxy:InputManagerManualTest",
+    "frameworks/proxy:InputManagerTest",
+    "frameworks/proxy:KeyEventTest",
+    "frameworks/proxy:PointerEventTest",
+    "frameworks/proxy:ut-mmi-proxy-out",
+    "service:ut-mmi-service-out",
+    "test/fuzztest:test",
+    "tools/inject_event:InjectEventTest",
+    "util:ut-mmi-util-out",
+  ]
+}
