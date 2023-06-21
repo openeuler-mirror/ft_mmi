@@ -27,8 +27,6 @@ package_deps = [
     "python3",
     "tar",
     "cmake",
-    # DRM Backend
-    "libdrm-devel",
     "systemd-devel",
     "mesa-libgbm-devel",
 ]
