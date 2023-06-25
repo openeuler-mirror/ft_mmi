@@ -17,12 +17,13 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <math.h>
 
 #include "dfx_hisysevent.h"
 #include "i_pointer_drawing_manager.h"
 #include "input_device_manager.h"
 #include "mouse_event_normalize.h"
-#include "pointer_drawing_manager.h"
+//#include "pointer_drawing_manager.h"
 #include "util_ex.h"
 #include "util_napi_error.h"
 #include "util.h"
@@ -92,7 +93,7 @@ int32_t InputWindowsManager::GetClientFd(std::shared_ptr<PointerEvent> pointerEv
             InitMouseDownInfo();
         }
     }
-    
+
     return udsServer_->GetClientFd(pid);
 }
 
@@ -531,12 +532,19 @@ void InputWindowsManager::GetPhysicalDisplayCoord(struct libinput_event_touch* t
     RotateTouchScreen(info, coord);
     touchInfo.point.x = coord.x;
     touchInfo.point.y = coord.y;
+#if FT_BUILD_USE_DEFAULT_TOUCH_AREA_INFO
+    touchInfo.toolRect.point.x = 0;
+    touchInfo.toolRect.point.y = 0;
+    touchInfo.toolRect.width = 0;
+    touchInfo.toolRect.height = 0;
+#else
     touchInfo.toolRect.point.x = static_cast<int32_t>(libinput_event_touch_get_tool_x_transformed(touch, info.width));
     touchInfo.toolRect.point.y = static_cast<int32_t>(libinput_event_touch_get_tool_y_transformed(touch, info.height));
     touchInfo.toolRect.width = static_cast<int32_t>(
         libinput_event_touch_get_tool_width_transformed(touch, info.width));
     touchInfo.toolRect.height = static_cast<int32_t>(
         libinput_event_touch_get_tool_height_transformed(touch, info.height));
+#endif
 }
 
 bool InputWindowsManager::TouchPointToDisplayPoint(int32_t deviceId, struct libinput_event_touch* touch,
@@ -647,13 +655,13 @@ int32_t InputWindowsManager::SetPointerStyle(int32_t pid, int32_t windowId, int3
         MMI_HILOGE("The pointer style map is not include param pd:%{public}d", pid);
         return COMMON_PARAMETER_ERROR ;
     }
-    
+
     auto iter = it->second.find(windowId);
     if (iter == it->second.end()) {
         MMI_HILOGE("The window id is invalid");
         return COMMON_PARAMETER_ERROR ;
     }
-    
+
     iter->second = pointerStyle;
     MMI_HILOGD("Window id:%{public}d set pointer style:%{public}d success", windowId, pointerStyle);
     return RET_OK;
@@ -667,14 +675,14 @@ int32_t InputWindowsManager::GetPointerStyle(int32_t pid, int32_t windowId, int3
         MMI_HILOGE("The pointer style map is not include param pd, %{public}d", pid);
         return RET_ERR;
     }
-    
+
     auto iter = it->second.find(windowId);
     if (iter == it->second.end()) {
         MMI_HILOGW("The window id is invalid");
         pointerStyle = DEFAULT_POINTER_STYLE;
         return RET_OK;
     }
-    
+
     MMI_HILOGD("Window type:%{public}d get pointer style:%{public}d success", windowId, iter->second);
     pointerStyle = iter->second;
     return RET_OK;

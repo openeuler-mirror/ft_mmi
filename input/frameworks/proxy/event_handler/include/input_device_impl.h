@@ -20,6 +20,7 @@
 #include <map>
 #include <mutex>
 #include <vector>
+#include <memory>
 
 #include "nocopyable.h"
 

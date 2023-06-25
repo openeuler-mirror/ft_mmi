@@ -59,10 +59,16 @@ bool TouchTransformProcessor::OnEventTouchDown(struct libinput_event *event)
     pointerEvent_->SetPointerAction(PointerEvent::POINTER_ACTION_DOWN);
 
     PointerEvent::PointerItem item;
+#if FT_BUILD_USE_DEFAULT_TOUCH_AREA_INFO
+    double pressure = 0;
+    int32_t longAxis = 0;
+    int32_t shortAxis = 0;
+#else
     double pressure = libinput_event_touch_get_pressure(touch);
-    int32_t seatSlot = libinput_event_touch_get_seat_slot(touch);
     int32_t longAxis = libinput_event_get_touch_contact_long_axis(touch);
     int32_t shortAxis = libinput_event_get_touch_contact_short_axis(touch);
+#endif
+    int32_t seatSlot = libinput_event_touch_get_seat_slot(touch);
     item.SetPressure(pressure);
     item.SetLongAxis(longAxis);
     item.SetShortAxis(shortAxis);
@@ -107,9 +113,15 @@ bool TouchTransformProcessor::OnEventTouchMotion(struct libinput_event *event)
         MMI_HILOGE("Get pointer parameter failed");
         return false;
     }
+#if FT_BUILD_USE_DEFAULT_TOUCH_AREA_INFO
+    double pressure = 0;
+    int32_t longAxis = 0;
+    int32_t shortAxis = 0;
+#else
     double pressure = libinput_event_touch_get_pressure(touch);
     int32_t longAxis = libinput_event_get_touch_contact_long_axis(touch);
     int32_t shortAxis = libinput_event_get_touch_contact_short_axis(touch);
+#endif
     item.SetPressure(pressure);
     item.SetLongAxis(longAxis);
     item.SetShortAxis(shortAxis);
@@ -193,7 +205,11 @@ std::shared_ptr<PointerEvent> TouchTransformProcessor::OnEvent(struct libinput_e
 int32_t TouchTransformProcessor::GetTouchToolType(struct libinput_event_touch *data,
     struct libinput_device *device)
 {
+#if FT_BUILD_USE_DEFAULT_TOUCH_AREA_INFO
+    int32_t toolType = MT_TOOL_NONE;
+#else
     int32_t toolType = libinput_event_touch_get_tool_type(data);
+#endif
     switch (toolType) {
         case MT_TOOL_NONE: {
             return GetTouchToolType(device);
@@ -213,6 +229,9 @@ int32_t TouchTransformProcessor::GetTouchToolType(struct libinput_event_touch *d
 
 int32_t TouchTransformProcessor::GetTouchToolType(struct libinput_device *device)
 {
+#if FT_BUILD_USE_DEFAULT_TOUCH_AREA_INFO
+    return PointerEvent::TOOL_TYPE_FINGER;
+#else
     for (const auto &item : vecToolType_) {
         if (libinput_device_touch_btn_tool_type_down(device, item.first) == BTN_DOWN) {
             return item.second;
@@ -220,6 +239,7 @@ int32_t TouchTransformProcessor::GetTouchToolType(struct libinput_device *device
     }
     MMI_HILOGW("Unknown Btn tool type, identified as finger");
     return PointerEvent::TOOL_TYPE_FINGER;
+#endif
 }
 
 void TouchTransformProcessor::InitToolTypes()

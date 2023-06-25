@@ -15,6 +15,7 @@
 
 #include "key_event.h"
 
+#include <limits.h>
 #include "mmi_log.h"
 
 

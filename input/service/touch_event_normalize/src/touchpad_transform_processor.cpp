@@ -39,6 +39,8 @@ TouchPadTransformProcessor::TouchPadTransformProcessor(int32_t deviceId)
 
 void TouchPadTransformProcessor::OnEventTouchPadDown(struct libinput_event *event)
 {
+    (void)deviceId_;
+#if 0
     CALL_DEBUG_ENTER;
     CHKPV(event);
     auto touchpad = libinput_event_get_touchpad_event(event);
@@ -83,10 +85,12 @@ void TouchPadTransformProcessor::OnEventTouchPadDown(struct libinput_event *even
     pointerEvent_->SetDeviceId(deviceId_);
     pointerEvent_->AddPointerItem(item);
     pointerEvent_->SetPointerId(seatSlot);
+#endif
 }
 
 void TouchPadTransformProcessor::OnEventTouchPadMotion(struct libinput_event *event)
 {
+#if 0
     CALL_DEBUG_ENTER;
     CHKPV(event);
     auto touchpad = libinput_event_get_touchpad_event(event);
@@ -123,10 +127,12 @@ void TouchPadTransformProcessor::OnEventTouchPadMotion(struct libinput_event *ev
     item.SetToolHeight(static_cast<int32_t>(toolHeight));
     pointerEvent_->UpdatePointerItem(seatSlot, item);
     pointerEvent_->SetPointerId(seatSlot);
+#endif
 }
 
 void TouchPadTransformProcessor::OnEventTouchPadUp(struct libinput_event *event)
 {
+#if 0
     CALL_DEBUG_ENTER;
     CHKPV(event);
     auto touchpad = libinput_event_get_touchpad_event(event);
@@ -146,6 +152,7 @@ void TouchPadTransformProcessor::OnEventTouchPadUp(struct libinput_event *event)
     item.SetPressed(false);
     pointerEvent_->UpdatePointerItem(seatSlot, item);
     pointerEvent_->SetPointerId(seatSlot);
+#endif
 }
 
 std::shared_ptr<PointerEvent> TouchPadTransformProcessor::OnEvent(struct libinput_event *event)
@@ -158,6 +165,7 @@ std::shared_ptr<PointerEvent> TouchPadTransformProcessor::OnEvent(struct libinpu
     }
     int32_t type = libinput_event_get_type(event);
     switch (type) {
+#if 0
         case LIBINPUT_EVENT_TOUCHPAD_DOWN: {
             OnEventTouchPadDown(event);
             break;
@@ -170,6 +178,7 @@ std::shared_ptr<PointerEvent> TouchPadTransformProcessor::OnEvent(struct libinpu
             OnEventTouchPadMotion(event);
             break;
         }
+#endif
         default: {
             return nullptr;
         }
@@ -185,6 +194,7 @@ std::shared_ptr<PointerEvent> TouchPadTransformProcessor::OnEvent(struct libinpu
 int32_t TouchPadTransformProcessor::GetTouchPadToolType(
     struct libinput_event_touch *touchpad, struct libinput_device *device)
 {
+#if 0
     int32_t toolType = libinput_event_touchpad_get_tool_type(touchpad);
     switch (toolType) {
         case MT_TOOL_NONE: {
@@ -201,15 +211,20 @@ int32_t TouchPadTransformProcessor::GetTouchPadToolType(
             return PointerEvent::TOOL_TYPE_FINGER;
         }
     }
+#else
+    return PointerEvent::TOOL_TYPE_FINGER;
+#endif
 }
 
 int32_t TouchPadTransformProcessor::GetTouchPadToolType(struct libinput_device *device)
 {
+#if 0
     for (const auto &item : vecToolType_) {
         if (libinput_device_touchpad_btn_tool_type_down(device, item.first) == BTN_DOWN) {
             return item.second;
         }
     }
+#endif
     MMI_HILOGW("Unknown Btn tool type, identified as finger");
     return PointerEvent::TOOL_TYPE_FINGER;
 }

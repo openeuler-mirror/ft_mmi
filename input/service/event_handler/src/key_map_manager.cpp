@@ -77,10 +77,13 @@ std::string KeyMapManager::GetProFilePath(const std::string &fileName) const
 std::string KeyMapManager::GetKeyEventFileName(struct libinput_device *device)
 {
     CHKPS(device);
-    uint32_t vendor = libinput_device_get_id_vendor(device);
+    // uint32_t vendor = libinput_device_get_id_vendor(device);
+    uint32_t vendor = 0;
     uint32_t product = libinput_device_get_id_product(device);
-    uint32_t version = libinput_device_get_id_version(device);
-    const char *name = libinput_device_get_name(device);
+    // uint32_t version = libinput_device_get_id_version(device);
+    // const char *name = libinput_device_get_name(device);
+    uint32_t version = 0;
+    const char* name = "unknown";
     CHKPS(name);
     std::string fileName = std::to_string(vendor) + "_" + std::to_string(product) + "_" +
         std::to_string(version) + "_" + name;

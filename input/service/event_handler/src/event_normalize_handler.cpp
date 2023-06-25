@@ -74,6 +74,7 @@ void EventNormalizeHandler::HandleEvent(libinput_event* event)
             DfxHisysevent::CalcPointerDispTimes();
             break;
         }
+#if 0
         case LIBINPUT_EVENT_TOUCHPAD_DOWN:
         case LIBINPUT_EVENT_TOUCHPAD_UP:
         case LIBINPUT_EVENT_TOUCHPAD_MOTION: {
@@ -81,6 +82,7 @@ void EventNormalizeHandler::HandleEvent(libinput_event* event)
             DfxHisysevent::CalcPointerDispTimes();
             break;
         }
+#endif
         case LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN:
         case LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE:
         case LIBINPUT_EVENT_GESTURE_SWIPE_END:
@@ -91,6 +93,7 @@ void EventNormalizeHandler::HandleEvent(libinput_event* event)
             DfxHisysevent::CalcPointerDispTimes();
             break;
         }
+#if 0
         case LIBINPUT_EVENT_TOUCH_DOWN:
         case LIBINPUT_EVENT_TOUCH_UP:
         case LIBINPUT_EVENT_TOUCH_MOTION: {
@@ -98,6 +101,7 @@ void EventNormalizeHandler::HandleEvent(libinput_event* event)
             DfxHisysevent::CalcPointerDispTimes();
             break;
         }
+#endif
         case LIBINPUT_EVENT_TABLET_TOOL_AXIS:
         case LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY:
         case LIBINPUT_EVENT_TABLET_TOOL_TIP: {
@@ -352,6 +356,7 @@ int32_t EventNormalizeHandler::HandleTouchPadEvent(libinput_event* event)
     CHKPR(pointerEvent, ERROR_NULL_POINTER);
     nextHandler_->HandlePointerEvent(pointerEvent);
     auto type = libinput_event_get_type(event);
+#if 0
     if (type == LIBINPUT_EVENT_TOUCHPAD_UP) {
         pointerEvent->RemovePointerItem(pointerEvent->GetPointerId());
         MMI_HILOGD("This touch pad event is up remove this finger");
@@ -360,6 +365,7 @@ int32_t EventNormalizeHandler::HandleTouchPadEvent(libinput_event* event)
             pointerEvent->Reset();
         }
     }
+#endif
 #else
     MMI_HILOGW("Pointer device does not support");
 #endif // OHOS_BUILD_ENABLE_POINTER
@@ -426,6 +432,7 @@ void EventNormalizeHandler::ResetTouchUpEvent(std::shared_ptr<PointerEvent> poin
     CHKPV(pointerEvent);
     CHKPV(event);
     auto type = libinput_event_get_type(event);
+#if 0
     if (type == LIBINPUT_EVENT_TOUCH_UP) {
         pointerEvent->RemovePointerItem(pointerEvent->GetPointerId());
         MMI_HILOGD("This touch event is up remove this finger");
@@ -434,6 +441,7 @@ void EventNormalizeHandler::ResetTouchUpEvent(std::shared_ptr<PointerEvent> poin
             pointerEvent->Reset();
         }
     }
+#endif
 }
 
 int32_t EventNormalizeHandler::HandleTableToolEvent(libinput_event* event)

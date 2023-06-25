@@ -1,0 +1,157 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/gn/fangtian.gni")
+import("//input/multimodalinput_mini.gni")
+mmi_fwk_proxy_path = "${mmi_path}/frameworks/proxy"
+
+config("libmmi_client_config") {
+  visibility = [ ":*" ]
+
+  include_dirs = [
+    "//input/interfaces/native/innerkits/common/include",
+    "//input/util/common/include",
+    "//input/interfaces/native/innerkits/event/include",
+    "${mmi_fwk_proxy_path}/event_handler/include",
+    "${mmi_fwk_proxy_path}/events/include",
+    "${mmi_fwk_proxy_path}/module_loader/include",
+    "//input/stub",
+  ]
+}
+
+config("libmmi_public_client_config") {
+  include_dirs = [
+    "//base/notification/eventhandler/interfaces/inner_api",
+    "//input/interfaces/native/innerkits/common/include",
+    "//input/interfaces/native/innerkits/event/include",
+    "//input/interfaces/native/innerkits/proxy/include",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
+    "//input/util/common/include",
+  ]
+}
+
+ft_source_set("libmmi-common") {
+  sources = [
+    "${mmi_fwk_proxy_path}/events/src/input_device.cpp",
+    "${mmi_fwk_proxy_path}/events/src/input_event.cpp",
+    "${mmi_fwk_proxy_path}/events/src/key_event.cpp",
+    "${mmi_fwk_proxy_path}/events/src/key_option.cpp",
+    "${mmi_fwk_proxy_path}/events/src/pointer_event.cpp",
+  ]
+
+  defines = []
+
+  if (input_feature_input_cooperation) {
+    defines += [ "OHOS_BUILD_ENABLE_COOPERATE" ]
+  }
+  public_configs = [ ":libmmi_client_config" ]
+
+  #deps = [
+  #  "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+  #  "//commonlibrary/c_utils/base:utils",
+  #]
+  public_configs += [
+    "//build/gn/configs/system_libs:hilog_config",
+    "//build/gn/configs/system_libs:c_utils_config",
+  ]
+}
+
+ft_shared_library("libmmi-client") {
+  sources = [
+    "${mmi_fwk_proxy_path}/event_handler/src/bytrace_adapter.cpp",
+    "${mmi_fwk_proxy_path}/event_handler/src/client_msg_handler.cpp",
+    "${mmi_fwk_proxy_path}/event_handler/src/input_device_impl.cpp",
+    "${mmi_fwk_proxy_path}/event_handler/src/input_handler_manager.cpp",
+    "${mmi_fwk_proxy_path}/event_handler/src/input_manager_impl.cpp",
+    "${mmi_fwk_proxy_path}/event_handler/src/multimodal_event_handler.cpp",
+    "${mmi_fwk_proxy_path}/events/src/axis_event.cpp",
+    "${mmi_fwk_proxy_path}/events/src/input_manager.cpp",
+    "${mmi_fwk_proxy_path}/module_loader/src/mmi_client.cpp",
+    "${mmi_fwk_proxy_path}/module_loader/src/mmi_fd_listener.cpp",
+  ]
+  if (input_feature_input_cooperation) {
+    sources += [ "event_handler/src/input_device_cooperate_impl.cpp" ]
+  }
+
+  defines = []
+
+  if (input_feature_pointer_drawing) {
+    defines += [ "OHOS_BUILD_ENABLE_POINTER_DRAWING" ]
+  }
+  if (input_feature_monitor) {
+    defines += [ "OHOS_BUILD_ENABLE_MONITOR" ]
+  }
+  if (input_feature_interceptor) {
+    defines += [ "OHOS_BUILD_ENABLE_INTERCEPTOR" ]
+  }
+  if (input_feature_keyboard) {
+    defines += [ "OHOS_BUILD_ENABLE_KEYBOARD" ]
+  }
+  if (input_feature_mouse) {
+    defines += [ "OHOS_BUILD_ENABLE_POINTER" ]
+  }
+  if (input_feature_touchscreen) {
+    defines += [ "OHOS_BUILD_ENABLE_TOUCH" ]
+  }
+
+  if (input_feature_interceptor) {
+    sources += [ "${mmi_fwk_proxy_path}/event_handler/src/input_interceptor_manager.cpp" ]
+  }
+
+  if (input_feature_monitor) {
+    sources += [ "${mmi_fwk_proxy_path}/event_handler/src/input_monitor_manager.cpp" ]
+  }
+
+  if (input_feature_keyboard) {
+    sources += [ "${mmi_fwk_proxy_path}/event_handler/src/key_event_input_subscribe_manager.cpp" ]
+  }
+
+  if (input_feature_input_cooperation) {
+    defines += [ "OHOS_BUILD_ENABLE_COOPERATE" ]
+  }
+
+  if (input_feature_joystick) {
+    defines += [ "OHOS_BUILD_ENABLE_JOYSTICK" ]
+  }
+
+  configs = [
+    ":libmmi_client_config",
+    "//input/util/ft_build:libmmi_util_public_config",
+    "//input/service/filter/ft_build:mmi_event_filter_config",
+    "//input/service/connect_manager/ft_build:mmi_connect_manager_config",
+  ]
+
+  public_configs = [ ":libmmi_public_client_config" ]
+
+  deps = [
+    ":libmmi-common",
+    #"//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    #"//base/hiviewdfx/hitrace/interfaces/native/innerkits:hitrace_meter",
+    #"//base/notification/eventhandler/frameworks/eventhandler:libeventhandler",
+    #"//commonlibrary/c_utils/base:utils",
+    #"//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
+    "//input/service/connect_manager/ft_build:mmi_connect_manager_proxy",
+    "//input/service/filter/ft_build:mmi_event_filter_service",
+    "//input/util/ft_build:libmmi-util",
+  ]
+  public_configs += [
+    "//build/gn/configs/system_libs:c_utils_config",
+    "//build/gn/configs/system_libs:ipc_core_config",
+    "//build/gn/configs/system_libs:hilog_config",
+    "//build/gn/configs/system_libs:hitrace_meter_config",
+    "//build/gn/configs/system_libs:eventhandler_config",
+    "//build/gn/configs/system_libs:safwk_config",
+  ]
+}
+
+

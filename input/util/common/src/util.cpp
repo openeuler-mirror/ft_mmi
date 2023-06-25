@@ -48,6 +48,7 @@ constexpr int32_t INVALID_FILE_SIZE = -1;
 constexpr int32_t MIN_INTERVALTIME = 50;
 constexpr int32_t MAX_INTERVALTIME = 500;
 constexpr int32_t MIN_DELAYTIME = 200;
+constexpr int32_t PATH_MAX = 200;
 constexpr int32_t MAX_DELAYTIME = 1000;
 constexpr int32_t COMMENT_SUBSCRIPT = 0;
 const std::string CONFIG_ITEM_REPEAT = "Key.autorepeat";

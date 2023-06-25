@@ -271,7 +271,7 @@ int32_t MMIService::Init()
     SetRecvFun(std::bind(&ServerMsgHandler::OnMsgHandler, &sMsgHandler_, std::placeholders::_1,
         std::placeholders::_2));
     KeyMapMgr->GetConfigKeyValue("default_keymap", KeyMapMgr->GetDefaultKeyId());
-    OHOS::system::SetParameter(INPUT_POINTER_DEVICE, "false");
+    // OHOS::system::SetParameter(INPUT_POINTER_DEVICE, "false");
     if (!InitService()) {
         MMI_HILOGE("Saservice init failed");
         return SASERVICE_INIT_FAIL;

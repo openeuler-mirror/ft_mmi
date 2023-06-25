@@ -16,6 +16,7 @@
 #include "key_event_input_subscribe_manager.h"
 
 #include <cinttypes>
+#include <limits.h>
 
 #include "define_multimodal.h"
 #include "error_multimodal.h"

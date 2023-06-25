@@ -67,10 +67,13 @@ std::shared_ptr<PointerEvent> TabletToolTransformProcessor::OnEvent(struct libin
 
 int32_t TabletToolTransformProcessor::GetToolType(struct libinput_event_tablet_tool* tabletEvent)
 {
+#ifndef FT_BUILD_USE_DEFAULT_TOUCH_AREA_INFO
     int32_t toolType = libinput_event_tablet_tool_get_tool_type(tabletEvent);
     if (toolType != 0) {
         return PointerEvent::TOOL_TYPE_PEN;
     }
+#endif
+
     auto tool = libinput_event_tablet_tool_get_tool(tabletEvent);
     CHKPR(tool, PointerEvent::TOOL_TYPE_PEN);
     int32_t type = libinput_tablet_tool_get_type(tool);

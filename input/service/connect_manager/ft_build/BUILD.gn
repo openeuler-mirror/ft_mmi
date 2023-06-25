@@ -1,0 +1,86 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/gn/fangtian.gni")
+import("//input/multimodalinput_mini.gni")
+mmi_connect_manager_path = "${mmi_path}/service/connect_manager"
+
+config("mmi_connect_manager_config") {
+  include_dirs = [
+    "//input/interfaces/native/innerkits/common/include",
+    "//input/interfaces/native/innerkits/event/include",
+    "//input/util/common/include",
+    "//input/util/network/include",
+    "//input/util/socket/include",
+    "//input/service/delegate_task/include",
+    "//input/service/filter/include",
+    "//input/service/message_handle/include",
+    "//input/service/permission_helper/include",
+    "//input/frameworks/proxy/event_handler/include",
+    "${mmi_connect_manager_path}/include",
+    "//input/stub",
+  ]
+}
+
+ft_source_set("mmi_connect_manager_service") {
+  sources =
+      [ "${mmi_connect_manager_path}/src/multimodal_input_connect_stub.cpp" ]
+
+  if (!input_feature_input_cooperation) {
+    sources += [
+      "${mmi_connect_manager_path}/src/multimodal_input_connect_def_parcel.cpp",
+    ]
+  }
+
+  configs = [ ":mmi_connect_manager_config" ]
+
+  #deps = [
+    #"//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    #"//commonlibrary/c_utils/base:utils",
+    #"//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
+    #"//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    #"//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+  #]
+  public_configs = [
+    "//build/gn/configs/system_libs:hilog_config",
+    "//build/gn/configs/system_libs:c_utils_config",
+    "//build/gn/configs/system_libs:ipc_core_config",
+    "//build/gn/configs/system_libs:samgr_config",
+  ]
+}
+
+ft_source_set("mmi_connect_manager_proxy") {
+  sources = [
+    "${mmi_connect_manager_path}/src/multimodal_input_connect_death_recipient.cpp",
+    "${mmi_connect_manager_path}/src/multimodal_input_connect_def_parcel.cpp",
+    "${mmi_connect_manager_path}/src/multimodal_input_connect_manager.cpp",
+    "${mmi_connect_manager_path}/src/multimodal_input_connect_proxy.cpp",
+  ]
+
+  configs = [ ":mmi_connect_manager_config" ]
+
+  #deps = [
+  #  "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+  #  "//commonlibrary/c_utils/base:utils",
+  #  "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
+  #  "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+  #  "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+  #]
+  public_configs = [
+    "//build/gn/configs/system_libs:hilog_config",
+    "//build/gn/configs/system_libs:c_utils_config",
+    "//build/gn/configs/system_libs:ipc_core_config",
+    "//build/gn/configs/system_libs:samgr_config",
+    "//build/gn/configs/system_libs:safwk_config",
+  ]
+}

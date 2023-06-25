@@ -28,5 +28,4 @@ package_deps = [
     "tar",
     "cmake",
     "systemd-devel",
-    "mesa-libgbm-devel",
 ]

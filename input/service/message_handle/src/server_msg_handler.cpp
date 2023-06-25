@@ -123,7 +123,8 @@ int32_t ServerMsgHandler::OnSetFunctionKeyState(int32_t funcKey, bool enable)
         MMI_HILOGE("Failed to set the keyboard led");
         return RET_ERR;
     }
-    int32_t state = libinput_get_funckey_state(device, funcKey);
+    // int32_t state = libinput_get_funckey_state(device, funcKey);
+    int32_t state = 1;
 
     auto keyEvent = KeyEventHdr->GetKeyEvent();
     CHKPR(keyEvent, ERROR_NULL_POINTER);

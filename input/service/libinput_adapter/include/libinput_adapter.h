@@ -17,6 +17,7 @@
 
 #include <functional>
 #include <thread>
+#include <string>
 
 #include <libudev.h>
 #include <sys/epoll.h>

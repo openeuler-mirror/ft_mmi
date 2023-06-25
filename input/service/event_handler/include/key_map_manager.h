@@ -18,6 +18,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "key_event_value_transformation.h"
 #include "libinput.h"
