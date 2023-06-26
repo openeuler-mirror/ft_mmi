@@ -86,7 +86,7 @@ std::shared_ptr<InputDevice> InputDeviceManager::GetInputDevice(int32_t id) cons
     inputDevice->SetBus(0);
     inputDevice->SetVersion(0);
     inputDevice->SetProduct(libinput_device_get_id_product(inputDeviceOrigin));
-    inputDevice->SetVendor(0);
+    inputDevice->SetVendor(libinput_device_get_id_vendor(inputDeviceOrigin));
     const char* phys = "null";
     inputDevice->SetPhys((phys == nullptr) ? ("null") : (phys));
     const char* uniq = "null";
@@ -361,6 +361,7 @@ void InputDeviceManager::OnInputDeviceAdded(struct libinput_device *inputDevice)
             IPointerDrawingManager::GetInstance()->SetMouseDisplayState(false);
         }
         NotifyPointerDevice(true, visible);
+        OHOS::system::SetParameter(INPUT_POINTER_DEVICE, "true");
         MMI_HILOGI("Set para input.pointer.device true");
     }
 #endif // OHOS_BUILD_ENABLE_POINTER && OHOS_BUILD_ENABLE_POINTER_DRAWING
@@ -453,6 +454,7 @@ void InputDeviceManager::ScanPointerDevice()
     }
     if (!hasPointerDevice) {
         NotifyPointerDevice(false, false);
+        OHOS::system::SetParameter(INPUT_POINTER_DEVICE, "false");
         MMI_HILOGI("Set para input.pointer.device false");
     }
 }
@@ -761,7 +763,7 @@ std::string InputDeviceManager::GenerateDescriptor(struct libinput_device *input
         return descriptor;
     }
 
-    uint16_t vendor = 0;
+    uint16_t vendor = libinput_device_get_id_vendor(inputDevice);
     const char* name = "unknown";
     const char* uniqueId = "null";
     uint16_t product = libinput_device_get_id_product(inputDevice);
