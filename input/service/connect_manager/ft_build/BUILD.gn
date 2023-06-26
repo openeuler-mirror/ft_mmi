@@ -13,7 +13,6 @@
 
 import("//build/gn/fangtian.gni")
 import("//input/ft_multimodalinput_mini.gni")
-mmi_connect_manager_path = "${mmi_path}/service/connect_manager"
 
 config("mmi_connect_manager_config") {
   include_dirs = [
@@ -27,18 +26,18 @@ config("mmi_connect_manager_config") {
     "${mmi_path}/service/message_handle/include",
     "${mmi_path}/service/permission_helper/include",
     "${mmi_path}/frameworks/proxy/event_handler/include",
-    "${mmi_connect_manager_path}/include",
+    "../include",
     "${mmi_path}/stub",
   ]
 }
 
 ft_source_set("mmi_connect_manager_service") {
   sources =
-      [ "${mmi_connect_manager_path}/src/multimodal_input_connect_stub.cpp" ]
+      [ "../src/multimodal_input_connect_stub.cpp" ]
 
   if (!input_feature_input_cooperation) {
     sources += [
-      "${mmi_connect_manager_path}/src/multimodal_input_connect_def_parcel.cpp",
+      "../src/multimodal_input_connect_def_parcel.cpp",
     ]
   }
 
@@ -54,10 +53,10 @@ ft_source_set("mmi_connect_manager_service") {
 
 ft_source_set("mmi_connect_manager_proxy") {
   sources = [
-    "${mmi_connect_manager_path}/src/multimodal_input_connect_death_recipient.cpp",
-    "${mmi_connect_manager_path}/src/multimodal_input_connect_def_parcel.cpp",
-    "${mmi_connect_manager_path}/src/multimodal_input_connect_manager.cpp",
-    "${mmi_connect_manager_path}/src/multimodal_input_connect_proxy.cpp",
+    "../src/multimodal_input_connect_death_recipient.cpp",
+    "../src/multimodal_input_connect_def_parcel.cpp",
+    "../src/multimodal_input_connect_manager.cpp",
+    "../src/multimodal_input_connect_proxy.cpp",
   ]
 
   configs = [ ":mmi_connect_manager_config" ]
