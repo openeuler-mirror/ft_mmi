@@ -43,8 +43,6 @@ config("libmmi_server_config") {
     "${mmi_path}/interfaces/native/innerkits/event/include",
     "../mouse_event_normalize/include",
     "${mmi_path}/interfaces/native/innerkits/common/include",
-    "//foundation/multimodalinput/interfaces/native/innerkits/event/include",
-    "//foundation/window/window_manager/interfaces/innerkits/wm",
     "${mmi_path}/util/common/include",
     "${mmi_path}/util/socket/include",
     "${mmi_path}/util/network/include",
@@ -106,8 +104,6 @@ config("libmmi_server_config") {
     defines += [ "FT_BUILD_ENABLE_TOUCHPAD_EVENT" ]
   }
 }
-
-
 
 ft_shared_library("libmmi-server") {
   sources = [

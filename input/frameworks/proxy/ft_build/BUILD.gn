@@ -30,11 +30,9 @@ config("libmmi_client_config") {
 
 config("libmmi_public_client_config") {
   include_dirs = [
-    "//base/notification/eventhandler/interfaces/inner_api",
     "${mmi_path}/interfaces/native/innerkits/common/include",
     "${mmi_path}/interfaces/native/innerkits/event/include",
     "${mmi_path}/interfaces/native/innerkits/proxy/include",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
     "${mmi_path}/util/common/include",
   ]
 }
