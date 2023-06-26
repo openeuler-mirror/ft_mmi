@@ -13,7 +13,6 @@
 
 import("//build/gn/fangtian.gni")
 import("//input/ft_multimodalinput_mini.gni")
-mmi_fwk_proxy_path = "${mmi_path}/frameworks/proxy"
 
 config("libmmi_client_config") {
   visibility = [ ":*" ]
@@ -22,9 +21,9 @@ config("libmmi_client_config") {
     "${mmi_path}/interfaces/native/innerkits/common/include",
     "${mmi_path}/util/common/include",
     "${mmi_path}/interfaces/native/innerkits/event/include",
-    "${mmi_fwk_proxy_path}/event_handler/include",
-    "${mmi_fwk_proxy_path}/events/include",
-    "${mmi_fwk_proxy_path}/module_loader/include",
+    "../event_handler/include",
+    "../events/include",
+    "../module_loader/include",
     "${mmi_path}/stub",
   ]
 }
@@ -42,11 +41,11 @@ config("libmmi_public_client_config") {
 
 ft_source_set("libmmi-common") {
   sources = [
-    "${mmi_fwk_proxy_path}/events/src/input_device.cpp",
-    "${mmi_fwk_proxy_path}/events/src/input_event.cpp",
-    "${mmi_fwk_proxy_path}/events/src/key_event.cpp",
-    "${mmi_fwk_proxy_path}/events/src/key_option.cpp",
-    "${mmi_fwk_proxy_path}/events/src/pointer_event.cpp",
+    "../events/src/input_device.cpp",
+    "../events/src/input_event.cpp",
+    "../events/src/key_event.cpp",
+    "../events/src/key_option.cpp",
+    "../events/src/pointer_event.cpp",
   ]
 
   defines = []
@@ -64,19 +63,19 @@ ft_source_set("libmmi-common") {
 
 ft_shared_library("libmmi-client") {
   sources = [
-    "${mmi_fwk_proxy_path}/event_handler/src/bytrace_adapter.cpp",
-    "${mmi_fwk_proxy_path}/event_handler/src/client_msg_handler.cpp",
-    "${mmi_fwk_proxy_path}/event_handler/src/input_device_impl.cpp",
-    "${mmi_fwk_proxy_path}/event_handler/src/input_handler_manager.cpp",
-    "${mmi_fwk_proxy_path}/event_handler/src/input_manager_impl.cpp",
-    "${mmi_fwk_proxy_path}/event_handler/src/multimodal_event_handler.cpp",
-    "${mmi_fwk_proxy_path}/events/src/axis_event.cpp",
-    "${mmi_fwk_proxy_path}/events/src/input_manager.cpp",
-    "${mmi_fwk_proxy_path}/module_loader/src/mmi_client.cpp",
-    "${mmi_fwk_proxy_path}/module_loader/src/mmi_fd_listener.cpp",
+    "../event_handler/src/bytrace_adapter.cpp",
+    "../event_handler/src/client_msg_handler.cpp",
+    "../event_handler/src/input_device_impl.cpp",
+    "../event_handler/src/input_handler_manager.cpp",
+    "../event_handler/src/input_manager_impl.cpp",
+    "../event_handler/src/multimodal_event_handler.cpp",
+    "../events/src/axis_event.cpp",
+    "../events/src/input_manager.cpp",
+    "../module_loader/src/mmi_client.cpp",
+    "../module_loader/src/mmi_fd_listener.cpp",
   ]
   if (input_feature_input_cooperation) {
-    sources += [ "${mmi_fwk_proxy_path}/event_handler/src/input_device_cooperate_impl.cpp" ]
+    sources += [ "../event_handler/src/input_device_cooperate_impl.cpp" ]
   }
 
   defines = []
@@ -101,15 +100,15 @@ ft_shared_library("libmmi-client") {
   }
 
   if (input_feature_interceptor) {
-    sources += [ "${mmi_fwk_proxy_path}/event_handler/src/input_interceptor_manager.cpp" ]
+    sources += [ "../event_handler/src/input_interceptor_manager.cpp" ]
   }
 
   if (input_feature_monitor) {
-    sources += [ "${mmi_fwk_proxy_path}/event_handler/src/input_monitor_manager.cpp" ]
+    sources += [ "../event_handler/src/input_monitor_manager.cpp" ]
   }
 
   if (input_feature_keyboard) {
-    sources += [ "${mmi_fwk_proxy_path}/event_handler/src/key_event_input_subscribe_manager.cpp" ]
+    sources += [ "../event_handler/src/key_event_input_subscribe_manager.cpp" ]
   }
 
   if (input_feature_input_cooperation) {

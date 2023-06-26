@@ -13,7 +13,6 @@
 
 import("//build/gn/fangtian.gni")
 import("//input/ft_multimodalinput_mini.gni")
-event_filter_path = "${mmi_path}/service/filter"
 
 config("mmi_event_filter_config") {
   include_dirs = [
@@ -21,15 +20,15 @@ config("mmi_event_filter_config") {
     "${mmi_path}/interfaces/native/innerkits/event/include",
     "${mmi_path}/service/event_handler/include",
     "${mmi_path}/util/common/include",
-    "${event_filter_path}/include",
+    "../include",
     "${mmi_path}/stub",
   ]
 }
 
 ft_source_set("mmi_event_filter_service") {
   sources = [
-    "${event_filter_path}/src/event_filter_service.cpp",
-    "${event_filter_path}/src/event_filter_stub.cpp",
+    "../src/event_filter_service.cpp",
+    "../src/event_filter_stub.cpp",
   ]
 
   configs = [ ":mmi_event_filter_config" ]
@@ -43,9 +42,9 @@ ft_source_set("mmi_event_filter_service") {
 
 ft_source_set("mmi_event_filter_proxy") {
   sources = [
-    "${event_filter_path}/src/event_filter_death_recipient.cpp",
-    "${event_filter_path}/src/event_filter_handler.cpp",
-    "${event_filter_path}/src/event_filter_proxy.cpp",
+    "../src/event_filter_death_recipient.cpp",
+    "../src/event_filter_handler.cpp",
+    "../src/event_filter_proxy.cpp",
   ]
 
   configs = [ ":mmi_event_filter_config" ]

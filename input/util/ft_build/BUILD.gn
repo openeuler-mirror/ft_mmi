@@ -14,13 +14,11 @@
 import("//build/gn/fangtian.gni")
 import("//input/ft_multimodalinput_mini.gni")
 
-mmi_util_path = "${mmi_path}/util"
-
 config("libmmi_util_public_config") {
   include_dirs = [
-    "${mmi_util_path}/common/include",
-    "${mmi_util_path}/network/include",
-    "${mmi_util_path}/socket/include",
+    "../common/include",
+    "../network/include",
+    "../socket/include",
     "${mmi_path}/interfaces/native/innerkits/common/include",
     "${mmi_path}/interfaces/native/innerkits/event/include",
   ]
@@ -34,16 +32,16 @@ config("libmmi_util_public_config") {
 
 ft_shared_library("libmmi-util") {
   sources = [
-    "${mmi_util_path}/common/src/input_event_data_transformation.cpp",
-    "${mmi_util_path}/common/src/klog.cpp",
-    "${mmi_util_path}/common/src/util.cpp",
-    "${mmi_util_path}/common/src/uuid.cpp",
-    "${mmi_util_path}/network/src/circle_stream_buffer.cpp",
-    "${mmi_util_path}/network/src/net_packet.cpp",
-    "${mmi_util_path}/network/src/stream_buffer.cpp",
-    "${mmi_util_path}/socket/src/uds_client.cpp",
-    "${mmi_util_path}/socket/src/uds_session.cpp",
-    "${mmi_util_path}/socket/src/uds_socket.cpp",
+    "../common/src/input_event_data_transformation.cpp",
+    "../common/src/klog.cpp",
+    "../common/src/util.cpp",
+    "../common/src/uuid.cpp",
+    "../network/src/circle_stream_buffer.cpp",
+    "../network/src/net_packet.cpp",
+    "../network/src/stream_buffer.cpp",
+    "../socket/src/uds_client.cpp",
+    "../socket/src/uds_session.cpp",
+    "../socket/src/uds_socket.cpp",
   ]
 
   configs = [

@@ -13,36 +13,35 @@
 
 import("//build/gn/fangtian.gni")
 import("//input/ft_multimodalinput_mini.gni")
-mmi_service_path = "${mmi_path}/service"
 
 config("libmmi_server_config") {
   include_dirs = [
-    "${mmi_service_path}/sinput_device_cooperate/include",
-    "${mmi_service_path}/device_manager/include",
-    "${mmi_service_path}/device_scalability/include",
-    "${mmi_service_path}/delegate_task/include",
-    "${mmi_service_path}/event_dispatch/include",
-    "${mmi_service_path}/key_event_normalize/include",
-    "${mmi_service_path}/event_handler/include",
-    "${mmi_service_path}/event_dump/include",
-    "${mmi_service_path}/monitor/include",
-    "${mmi_service_path}/interceptor/include",
-    "${mmi_service_path}/dfx/include",
-    "${mmi_service_path}/libinput_adapter/include",
-    "${mmi_service_path}/message_handle/include",
-    "${mmi_service_path}/module_loader/include",
-    "${mmi_service_path}/window_manager/include",
-    "${mmi_service_path}/touch_event_normalize/include",
-    "${mmi_service_path}/key_command/include",
-    "${mmi_service_path}/subscriber/include",
-    "${mmi_service_path}/timer_manager/include",
-    "${mmi_service_path}/permission_helper/include",
-    "${mmi_service_path}/connect_manager/include",
-    "${mmi_service_path}/filter/include",
-    "${mmi_service_path}/module_loader/include",
+    "../sinput_device_cooperate/include",
+    "../device_manager/include",
+    "../device_scalability/include",
+    "../delegate_task/include",
+    "../event_dispatch/include",
+    "../key_event_normalize/include",
+    "../event_handler/include",
+    "../event_dump/include",
+    "../monitor/include",
+    "../interceptor/include",
+    "../dfx/include",
+    "../libinput_adapter/include",
+    "../message_handle/include",
+    "../module_loader/include",
+    "../window_manager/include",
+    "../touch_event_normalize/include",
+    "../key_command/include",
+    "../subscriber/include",
+    "../timer_manager/include",
+    "../permission_helper/include",
+    "../connect_manager/include",
+    "../filter/include",
+    "../module_loader/include",
     "${mmi_path}/interfaces/native/innerkits/proxy/include",
     "${mmi_path}/interfaces/native/innerkits/event/include",
-    "${mmi_service_path}/mouse_event_normalize/include",
+    "../mouse_event_normalize/include",
     "${mmi_path}/interfaces/native/innerkits/common/include",
     "//foundation/multimodalinput/interfaces/native/innerkits/event/include",
     "//foundation/window/window_manager/interfaces/innerkits/wm",
@@ -54,7 +53,7 @@ config("libmmi_server_config") {
 
   if (input_feature_input_cooperation) {
     include_dirs += [
-      "${mmi_service_path}/input_device_cooperate/include",
+      "../input_device_cooperate/include",
     ]
   }
 
@@ -113,80 +112,80 @@ config("libmmi_server_config") {
 ft_shared_library("libmmi-server") {
   sources = [
     "${mmi_path}/frameworks/proxy/event_handler/src/bytrace_adapter.cpp",
-    "${mmi_service_path}/delegate_task/src/delegate_tasks.cpp",
-    "${mmi_service_path}/device_manager/src/input_device_manager.cpp",
-    "${mmi_service_path}/dfx/src/dfx_hisysevent.cpp",
-    "${mmi_service_path}/event_dispatch/src/event_dispatch_handler.cpp",
-    "${mmi_service_path}/event_dump/src/event_dump.cpp",
-    "${mmi_service_path}/event_handler/src/anr_manager.cpp",
-    "${mmi_service_path}/event_handler/src/event_normalize_handler.cpp",
-    "${mmi_service_path}/event_handler/src/input_event_handler.cpp",
-    "${mmi_service_path}/event_handler/src/key_auto_repeat.cpp",
-    "${mmi_service_path}/event_handler/src/key_event_value_transformation.cpp",
-    "${mmi_service_path}/event_handler/src/key_map_manager.cpp",
-    "${mmi_service_path}/libinput_adapter/src/libinput_adapter.cpp",
-    "${mmi_service_path}/message_handle/src/server_msg_handler.cpp",
-    "${mmi_service_path}/module_loader/src/mmi_service.cpp",
-    "${mmi_service_path}/module_loader/src/uds_server.cpp",
-    "${mmi_service_path}/permission_helper/src/ft_permission_helper.cpp",
-    "${mmi_service_path}/timer_manager/src/timer_manager.cpp",
-    "${mmi_service_path}/window_manager/src/input_windows_manager.cpp",
+    "../delegate_task/src/delegate_tasks.cpp",
+    "../device_manager/src/input_device_manager.cpp",
+    "../dfx/src/dfx_hisysevent.cpp",
+    "../event_dispatch/src/event_dispatch_handler.cpp",
+    "../event_dump/src/event_dump.cpp",
+    "../event_handler/src/anr_manager.cpp",
+    "../event_handler/src/event_normalize_handler.cpp",
+    "../event_handler/src/input_event_handler.cpp",
+    "../event_handler/src/key_auto_repeat.cpp",
+    "../event_handler/src/key_event_value_transformation.cpp",
+    "../event_handler/src/key_map_manager.cpp",
+    "../libinput_adapter/src/libinput_adapter.cpp",
+    "../message_handle/src/server_msg_handler.cpp",
+    "../module_loader/src/mmi_service.cpp",
+    "../module_loader/src/uds_server.cpp",
+    "../permission_helper/src/ft_permission_helper.cpp",
+    "../timer_manager/src/timer_manager.cpp",
+    "../window_manager/src/input_windows_manager.cpp",
   ]
 
   if (input_feature_input_cooperation) {
     sources += [
-      "${mmi_service_path}/input_device_cooperate/src/cooperate_event_handler.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/cooperate_event_manager.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/device_cooperate_softbus_adapter.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/device_profile_adapter.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/distributed_input_adapter.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/i_input_device_cooperate_state.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/input_device_cooperate_sm.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/input_device_cooperate_state_free.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/input_device_cooperate_state_in.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/input_device_cooperate_state_out.cpp",
-      "${mmi_service_path}/input_device_cooperate/src/input_device_cooperate_util.cpp",
+      "../input_device_cooperate/src/cooperate_event_handler.cpp",
+      "../input_device_cooperate/src/cooperate_event_manager.cpp",
+      "../input_device_cooperate/src/device_cooperate_softbus_adapter.cpp",
+      "../input_device_cooperate/src/device_profile_adapter.cpp",
+      "../input_device_cooperate/src/distributed_input_adapter.cpp",
+      "../input_device_cooperate/src/i_input_device_cooperate_state.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_sm.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_state_free.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_state_in.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_state_out.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_util.cpp",
     ]
   }
 
   if (input_feature_keyboard) {
     sources += [
-      "${mmi_service_path}/key_event_normalize/src/key_event_normalize.cpp",
-      "${mmi_service_path}/key_event_normalize/src/key_unicode_transformation.cpp",
-      "${mmi_service_path}/subscriber/src/key_subscriber_handler.cpp",
+      "../key_event_normalize/src/key_event_normalize.cpp",
+      "../key_event_normalize/src/key_unicode_transformation.cpp",
+      "../subscriber/src/key_subscriber_handler.cpp",
     ]
     if (input_feature_combination_key) {
-      sources += [ "${mmi_service_path}/key_command/src/key_command_handler.cpp" ]
+      sources += [ "../key_command/src/key_command_handler.cpp" ]
     }
   }
 
   if (input_feature_mouse || input_feature_touchscreen) {
-    sources += [ "${mmi_service_path}/touch_event_normalize/src/touch_event_normalize.cpp" ]
+    sources += [ "../touch_event_normalize/src/touch_event_normalize.cpp" ]
     if (input_feature_mouse) {
       sources += [
-        "${mmi_service_path}/mouse_event_normalize/src/mouse_device_state.cpp",
-        "${mmi_service_path}/mouse_event_normalize/src/mouse_event_normalize.cpp",
-        "${mmi_service_path}/touch_event_normalize/src/gesture_transform_processor.cpp",
-        "${mmi_service_path}/touch_event_normalize/src/touchpad_transform_processor.cpp",
+        "../mouse_event_normalize/src/mouse_device_state.cpp",
+        "../mouse_event_normalize/src/mouse_event_normalize.cpp",
+        "../touch_event_normalize/src/gesture_transform_processor.cpp",
+        "../touch_event_normalize/src/touchpad_transform_processor.cpp",
       ]
       if (input_feature_pointer_drawing) {
-        sources += [ "${mmi_service_path}/window_manager/src/pointer_drawing_manager.cpp" ]
+        sources += [ "../window_manager/src/pointer_drawing_manager.cpp" ]
       } else {
-        sources += [ "${mmi_service_path}/window_manager/src/i_pointer_drawing_manager.cpp" ]
+        sources += [ "../window_manager/src/i_pointer_drawing_manager.cpp" ]
       }
     }
     if (input_feature_touchscreen) {
       sources += [
-        "${mmi_service_path}/touch_event_normalize/src/tablet_tool_tranform_processor.cpp",
-        "${mmi_service_path}/touch_event_normalize/src/touch_transform_processor.cpp",
+        "../touch_event_normalize/src/tablet_tool_tranform_processor.cpp",
+        "../touch_event_normalize/src/touch_transform_processor.cpp",
       ]
     }
   }
   if (input_feature_monitor) {
-    sources += [ "${mmi_service_path}/monitor/src/event_monitor_handler.cpp" ]
+    sources += [ "../monitor/src/event_monitor_handler.cpp" ]
   }
   if (input_feature_interceptor) {
-    sources += [ "${mmi_service_path}/interceptor/src/event_interceptor_handler.cpp" ]
+    sources += [ "../interceptor/src/event_interceptor_handler.cpp" ]
   }
 
   configs = [ ":libmmi_server_config" ]
