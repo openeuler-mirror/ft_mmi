@@ -11,23 +11,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/gn/fangtian.gni")
+import("//build/ohos.gni")
 
-mmi_path = "//input"
-#ability_runtime_path = "//foundation/ability/ability_runtime"
-#ability_runtime_kits_path = "${ability_runtime_path}/frameworks/kits"
+mmi_path = "//foundation/multimodalinput/input"
+ability_runtime_path = "//foundation/ability/ability_runtime"
+ability_runtime_kits_path = "${ability_runtime_path}/frameworks/kits"
 
 declare_args() {
   resource_schedule_service_enabled = false
-  input_feature_combination_key = false
-  input_feature_pointer_drawing = false
-  input_feature_interceptor = false
-  input_feature_monitor = false
+  input_feature_combination_key = true
+  input_feature_pointer_drawing = true
+  input_feature_interceptor = true
+  input_feature_monitor = true
   input_feature_keyboard = true
   input_feature_mouse = true
-  input_feature_joystick = false
+  input_feature_joystick = true
   input_feature_touchscreen = true
-  input_feature_input_device = false
+  input_feature_input_device = true
   input_feature_input_cooperation = false
 
   if (defined(global_parts_info) &&
