@@ -76,6 +76,7 @@ bool PermissionHelper::CheckHapPermission(uint32_t tokenId, uint32_t required)
         return false;
     }
     MMI_HILOGI("Check hap permission success");
+    return true;
 }
 
 bool PermissionHelper::CheckMonitorPermission(uint32_t tokenId)
@@ -87,6 +88,7 @@ bool PermissionHelper::CheckMonitorPermission(uint32_t tokenId)
         return false;
     }
     MMI_HILOGI("Check monitor permission success");
+    return true;
 }
 
 int32_t PermissionHelper::GetTokenType()

@@ -23,7 +23,6 @@
 #include "i_pointer_drawing_manager.h"
 #include "input_device_manager.h"
 #include "mouse_event_normalize.h"
-//#include "pointer_drawing_manager.h"
 #include "util_ex.h"
 #include "util_napi_error.h"
 #include "util.h"

@@ -27,7 +27,6 @@
 #include "key_map_manager.h"
 #include "msg_handler.h"
 #include "nocopyable.h"
-//#include "pointer_drawing_manager.h"
 #include "singleton.h"
 #include "util.h"
 
