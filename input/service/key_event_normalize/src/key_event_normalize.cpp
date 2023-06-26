@@ -88,7 +88,6 @@ int32_t KeyEventNormalize::Normalize(struct libinput_event *event, std::shared_p
     if (keyAction == KeyEvent::KEY_ACTION_UP) {
         int32_t funcKey = keyEvent->TransitionFunctionKey(keyCode);
         if (funcKey != KeyEvent::UNKOWN_FUNCTION_KEY) {
-            // int32_t ret = keyEvent->SetFunctionKey(funcKey, libinput_get_funckey_state(device, funcKey));
             int32_t ret = keyEvent->SetFunctionKey(funcKey, 1);
             if (ret == funcKey) {
                 MMI_HILOGD("Set function key:%{public}d to state:%{public}d succeed",
@@ -113,7 +112,6 @@ void KeyEventNormalize::ResetKeyEvent(struct libinput_device* device)
         if (keyEvent_ == nullptr) {
             keyEvent_ = KeyEvent::Create();
         }
-        // if (libinput_has_event_led_type(device)) {
         if (false) {
             CHKPV(keyEvent_);
             const std::vector<int32_t> funcKeys = {
@@ -122,7 +120,6 @@ void KeyEventNormalize::ResetKeyEvent(struct libinput_device* device)
                 KeyEvent::SCROLL_LOCK_FUNCTION_KEY
             };
             for (const auto &funcKey : funcKeys) {
-                // keyEvent_->SetFunctionKey(funcKey, libinput_get_funckey_state(device, funcKey));
                 keyEvent_->SetFunctionKey(funcKey, 1);
             }
         }

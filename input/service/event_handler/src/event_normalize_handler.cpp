@@ -430,7 +430,7 @@ void EventNormalizeHandler::ResetTouchUpEvent(std::shared_ptr<PointerEvent> poin
     CHKPV(pointerEvent);
     CHKPV(event);
     auto type = libinput_event_get_type(event);
-#if 0
+#if OHOS_BUILD_ENABLE_TOUCH
     if (type == LIBINPUT_EVENT_TOUCH_UP) {
         pointerEvent->RemovePointerItem(pointerEvent->GetPointerId());
         MMI_HILOGD("This touch event is up remove this finger");

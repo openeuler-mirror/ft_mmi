@@ -68,7 +68,6 @@ void LibinputAdapter::LoginfoPackagingTool(struct libinput_event *event)
 int32_t LibinputAdapter::DeviceLedUpdate(struct libinput_device *device, int32_t funcKey, bool enable)
 {
     CHKPR(device, RET_ERR);
-    // return libinput_set_led_state(device, funcKey, enable);
     return 0;
 }
 
