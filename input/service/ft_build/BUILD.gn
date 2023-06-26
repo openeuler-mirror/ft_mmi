@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2022 Huawei Technologies Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/gn/fangtian.gni")
-import("//input/multimodalinput_mini.gni")
+import("//input/ft_multimodalinput_mini.gni")
 mmi_service_path = "${mmi_path}/service"
 
 config("libmmi_server_config") {
@@ -43,20 +43,18 @@ config("libmmi_server_config") {
     "${mmi_path}/interfaces/native/innerkits/proxy/include",
     "${mmi_path}/interfaces/native/innerkits/event/include",
     "${mmi_service_path}/mouse_event_normalize/include",
+    "${mmi_path}/interfaces/native/innerkits/common/include",
     "//foundation/multimodalinput/interfaces/native/innerkits/event/include",
     "//foundation/window/window_manager/interfaces/innerkits/wm",
-    "//input/interfaces/native/innerkits/common/include",
-    "//input/util/common/include",
-    "//input/util/socket/include",
-    "//input/util/network/include",
-    "//input/frameworks/proxy/event_handler/include",
+    "${mmi_path}/util/common/include",
+    "${mmi_path}/util/socket/include",
+    "${mmi_path}/util/network/include",
+    "${mmi_path}/frameworks/proxy/event_handler/include",
   ]
 
   if (input_feature_input_cooperation) {
     include_dirs += [
       "${mmi_service_path}/input_device_cooperate/include",
-      "//foundation/deviceprofile/device_profile_core/interfaces/innerkits/core/include",
-      "//foundation/distributedhardware/device_manager/interfaces/inner_kits/native_cpp/include",
     ]
   }
 
@@ -104,13 +102,17 @@ config("libmmi_server_config") {
   if (input_feature_joystick) {
     defines += [ "OHOS_BUILD_ENABLE_JOYSTICK" ]
   }
+
+  if (input_touchpad_event) {
+    defines += [ "FT_BUILD_ENABLE_TOUCHPAD_EVENT" ]
+  }
 }
 
 
 
 ft_shared_library("libmmi-server") {
   sources = [
-    "//input/frameworks/proxy/event_handler/src/bytrace_adapter.cpp",
+    "${mmi_path}/frameworks/proxy/event_handler/src/bytrace_adapter.cpp",
     "${mmi_service_path}/delegate_task/src/delegate_tasks.cpp",
     "${mmi_service_path}/device_manager/src/input_device_manager.cpp",
     "${mmi_service_path}/dfx/src/dfx_hisysevent.cpp",
@@ -126,7 +128,7 @@ ft_shared_library("libmmi-server") {
     "${mmi_service_path}/message_handle/src/server_msg_handler.cpp",
     "${mmi_service_path}/module_loader/src/mmi_service.cpp",
     "${mmi_service_path}/module_loader/src/uds_server.cpp",
-    "${mmi_service_path}/permission_helper/src/permission_helper.cpp",
+    "${mmi_service_path}/permission_helper/src/ft_permission_helper.cpp",
     "${mmi_service_path}/timer_manager/src/timer_manager.cpp",
     "${mmi_service_path}/window_manager/src/input_windows_manager.cpp",
   ]
@@ -200,62 +202,10 @@ ft_shared_library("libmmi-server") {
   ]
 
   deps = [
-    #":drawing_pointer_image_Colorsucker",
-    #":drawing_pointer_image_Copy",
-    #":drawing_pointer_image_Cross",
-    #":drawing_pointer_image_Default",
-    #":drawing_pointer_image_East",
-    #":drawing_pointer_image_Forbid",
-    #":drawing_pointer_image_Hand_Grabbing",
-    #":drawing_pointer_image_Hand_Open",
-    #":drawing_pointer_image_Hand_Pointing",
-    #":drawing_pointer_image_Help",
-    #":drawing_pointer_image_MID_Btn_East",
-    #":drawing_pointer_image_MID_Btn_North",
-    #":drawing_pointer_image_MID_Btn_North_East",
-    #":drawing_pointer_image_MID_Btn_North_South",
-    #":drawing_pointer_image_MID_Btn_North_South_West_East",
-    #":drawing_pointer_image_MID_Btn_North_West",
-    #":drawing_pointer_image_MID_Btn_South",
-    #":drawing_pointer_image_MID_Btn_South_East",
-    #":drawing_pointer_image_MID_Btn_South_West",
-    #":drawing_pointer_image_MID_Btn_West",
-    #":drawing_pointer_image_Move",
-    #":drawing_pointer_image_North",
-    #":drawing_pointer_image_North_East",
-    #":drawing_pointer_image_North_East_South_West",
-    #":drawing_pointer_image_North_South",
-    #":drawing_pointer_image_North_West",
-    #":drawing_pointer_image_North_West_South_East",
-    #":drawing_pointer_image_Resize_Left_Right",
-    #":drawing_pointer_image_Resize_Up_Down",
-    #":drawing_pointer_image_Screenshot_Cross",
-    #":drawing_pointer_image_Screenshot_Cursor",
-    #":drawing_pointer_image_South",
-    #":drawing_pointer_image_South_East",
-    #":drawing_pointer_image_South_West",
-    #":drawing_pointer_image_Text_Cursor",
-    #":drawing_pointer_image_West",
-    #":drawing_pointer_image_West_East",
-    #":drawing_pointer_image_Zoom_In",
-    #":drawing_pointer_image_Zoom_Out",
-    #":mmi_device_config.ini",
-    #":multimodalinput.para.dac",
-    #":multimodalinput_config_ability.json",
-    #"//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    #"//base/hiviewdfx/hitrace/interfaces/native/innerkits:hitrace_meter",
-    #"//base/notification/eventhandler/frameworks/eventhandler:libeventhandler",
-    #"//commonlibrary/c_utils/base:utils",
-    #"//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
-
-    #"//foundation/graphic/graphic_2d/rosen/modules/render_service_client:librender_service_client",
-    #"//foundation/multimedia/image_framework/interfaces/innerkits:image_native",
-    "//input/frameworks/proxy/ft_build:libmmi-common",
-    "//input/service/connect_manager/ft_build:mmi_connect_manager_service",
-    "//input/service/filter/ft_build:mmi_event_filter_proxy",
-    "//input/util/ft_build:libmmi-util",
-    #"//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    #"//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "${mmi_path}/frameworks/proxy/ft_build:libmmi-common",
+    "${mmi_path}/service/connect_manager/ft_build:mmi_connect_manager_service",
+    "${mmi_path}/service/filter/ft_build:mmi_event_filter_proxy",
+    "${mmi_path}/util/ft_build:libmmi-util",
   ]
 
   public_configs = [

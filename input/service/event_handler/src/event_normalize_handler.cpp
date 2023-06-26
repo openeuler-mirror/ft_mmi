@@ -74,7 +74,7 @@ void EventNormalizeHandler::HandleEvent(libinput_event* event)
             DfxHisysevent::CalcPointerDispTimes();
             break;
         }
-#if 0
+#ifdef FT_BUILD_ENABLE_TOUCHPAD_EVENT
         case LIBINPUT_EVENT_TOUCHPAD_DOWN:
         case LIBINPUT_EVENT_TOUCHPAD_UP:
         case LIBINPUT_EVENT_TOUCHPAD_MOTION: {
@@ -93,7 +93,6 @@ void EventNormalizeHandler::HandleEvent(libinput_event* event)
             DfxHisysevent::CalcPointerDispTimes();
             break;
         }
-#if 0
         case LIBINPUT_EVENT_TOUCH_DOWN:
         case LIBINPUT_EVENT_TOUCH_UP:
         case LIBINPUT_EVENT_TOUCH_MOTION: {
@@ -101,7 +100,6 @@ void EventNormalizeHandler::HandleEvent(libinput_event* event)
             DfxHisysevent::CalcPointerDispTimes();
             break;
         }
-#endif
         case LIBINPUT_EVENT_TABLET_TOOL_AXIS:
         case LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY:
         case LIBINPUT_EVENT_TABLET_TOOL_TIP: {
@@ -356,7 +354,7 @@ int32_t EventNormalizeHandler::HandleTouchPadEvent(libinput_event* event)
     CHKPR(pointerEvent, ERROR_NULL_POINTER);
     nextHandler_->HandlePointerEvent(pointerEvent);
     auto type = libinput_event_get_type(event);
-#if 0
+#ifdef FT_BUILD_ENABLE_TOUCHPAD_EVENT
     if (type == LIBINPUT_EVENT_TOUCHPAD_UP) {
         pointerEvent->RemovePointerItem(pointerEvent->GetPointerId());
         MMI_HILOGD("This touch pad event is up remove this finger");

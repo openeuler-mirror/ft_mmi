@@ -28,4 +28,5 @@ package_deps = [
     "tar",
     "cmake",
     "systemd-devel",
+    "libinput-devel",
 ]
