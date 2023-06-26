@@ -215,5 +215,6 @@ ft_shared_library("libmmi-server") {
     "//build/gn/configs/system_libs:hitrace_meter_config",
     "//build/gn/configs/system_libs:eventhandler_config",
     "//build/gn/configs/system_libs:safwk_config",
+    "//build/gn/configs/system_libs:syspara_config",
   ]
 }
