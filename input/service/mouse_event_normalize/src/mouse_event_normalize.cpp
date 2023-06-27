@@ -16,6 +16,7 @@
 #include "mouse_event_normalize.h"
 
 #include <cinttypes>
+#include <math.h>
 
 #include "input-event-codes.h"
 

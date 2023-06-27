@@ -24,9 +24,9 @@ namespace MMI {
 class PermissionHelper final {
     DECLARE_DELAYED_SINGLETON(PermissionHelper);
 public:
-    static const uint32_t APL_NORMAL = 1 << OHOS::Security::AccessToken::APL_NORMAL;
-    static const uint32_t APL_SYSTEM_BASIC = 1 << OHOS::Security::AccessToken::APL_SYSTEM_BASIC;
-    static const uint32_t APL_SYSTEM_CORE = 1 << OHOS::Security::AccessToken::APL_SYSTEM_CORE;
+    static const uint32_t APL_NORMAL = 1 << 1;
+    static const uint32_t APL_SYSTEM_BASIC = 1 << 2;
+    static const uint32_t APL_SYSTEM_CORE = 1 << 3;
     static const uint32_t APL_SYSTEM_BASIC_CORE = APL_SYSTEM_BASIC + APL_SYSTEM_CORE;
 
 public:

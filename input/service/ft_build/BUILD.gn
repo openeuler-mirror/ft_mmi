@@ -1,0 +1,215 @@
+# Copyright (c) 2021-2022 Huawei Technologies Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/gn/fangtian.gni")
+import("//input/ft_multimodalinput_mini.gni")
+
+config("libmmi_server_config") {
+  include_dirs = [
+    "../sinput_device_cooperate/include",
+    "../device_manager/include",
+    "../device_scalability/include",
+    "../delegate_task/include",
+    "../event_dispatch/include",
+    "../key_event_normalize/include",
+    "../event_handler/include",
+    "../event_dump/include",
+    "../monitor/include",
+    "../interceptor/include",
+    "../dfx/include",
+    "../libinput_adapter/include",
+    "../message_handle/include",
+    "../module_loader/include",
+    "../window_manager/include",
+    "../touch_event_normalize/include",
+    "../key_command/include",
+    "../subscriber/include",
+    "../timer_manager/include",
+    "../permission_helper/include",
+    "../connect_manager/include",
+    "../filter/include",
+    "../module_loader/include",
+    "${mmi_path}/interfaces/native/innerkits/proxy/include",
+    "${mmi_path}/interfaces/native/innerkits/event/include",
+    "../mouse_event_normalize/include",
+    "${mmi_path}/interfaces/native/innerkits/common/include",
+    "${mmi_path}/util/common/include",
+    "${mmi_path}/util/socket/include",
+    "${mmi_path}/util/network/include",
+    "${mmi_path}/frameworks/proxy/event_handler/include",
+  ]
+
+  if (input_feature_input_cooperation) {
+    include_dirs += [
+      "../input_device_cooperate/include",
+    ]
+  }
+
+  defines = []
+
+  if (input_feature_combination_key) {
+    defines += [ "OHOS_BUILD_ENABLE_COMBINATION_KEY" ]
+  }
+
+  if (input_feature_pointer_drawing) {
+    defines += [ "OHOS_BUILD_ENABLE_POINTER_DRAWING" ]
+  }
+
+  if (input_feature_interceptor) {
+    defines += [ "OHOS_BUILD_ENABLE_INTERCEPTOR" ]
+  }
+
+  if (resource_schedule_service_enabled) {
+    defines += [ "OHOS_RSS_CLIENT" ]
+  }
+
+  if (input_feature_pointer_drawing) {
+    defines += [ "OHOS_BUILD_ENABLE_POINTER_DRAWING" ]
+  }
+  if (input_feature_keyboard) {
+    defines += [ "OHOS_BUILD_ENABLE_KEYBOARD" ]
+  }
+
+  if (input_feature_mouse) {
+    defines += [ "OHOS_BUILD_ENABLE_POINTER" ]
+  }
+
+  if (input_feature_touchscreen) {
+    defines += [ "OHOS_BUILD_ENABLE_TOUCH" ]
+    defines += [ "FT_BUILD_USE_DEFAULT_TOUCH_AREA_INFO" ]
+  }
+  if (input_feature_monitor) {
+    defines += [ "OHOS_BUILD_ENABLE_MONITOR" ]
+  }
+
+  if (input_feature_input_cooperation) {
+    defines += [ "OHOS_BUILD_ENABLE_COOPERATE" ]
+  }
+
+  if (input_feature_joystick) {
+    defines += [ "OHOS_BUILD_ENABLE_JOYSTICK" ]
+  }
+
+  if (input_touchpad_event) {
+    defines += [ "FT_BUILD_ENABLE_TOUCHPAD_EVENT" ]
+  }
+}
+
+ft_shared_library("libmmi-server") {
+  sources = [
+    "${mmi_path}/frameworks/proxy/event_handler/src/bytrace_adapter.cpp",
+    "../delegate_task/src/delegate_tasks.cpp",
+    "../device_manager/src/input_device_manager.cpp",
+    "../dfx/src/dfx_hisysevent.cpp",
+    "../event_dispatch/src/event_dispatch_handler.cpp",
+    "../event_dump/src/event_dump.cpp",
+    "../event_handler/src/anr_manager.cpp",
+    "../event_handler/src/event_normalize_handler.cpp",
+    "../event_handler/src/input_event_handler.cpp",
+    "../event_handler/src/key_auto_repeat.cpp",
+    "../event_handler/src/key_event_value_transformation.cpp",
+    "../event_handler/src/key_map_manager.cpp",
+    "../libinput_adapter/src/libinput_adapter.cpp",
+    "../message_handle/src/server_msg_handler.cpp",
+    "../module_loader/src/mmi_service.cpp",
+    "../module_loader/src/uds_server.cpp",
+    "../permission_helper/src/ft_permission_helper.cpp",
+    "../timer_manager/src/timer_manager.cpp",
+    "../window_manager/src/input_windows_manager.cpp",
+  ]
+
+  if (input_feature_input_cooperation) {
+    sources += [
+      "../input_device_cooperate/src/cooperate_event_handler.cpp",
+      "../input_device_cooperate/src/cooperate_event_manager.cpp",
+      "../input_device_cooperate/src/device_cooperate_softbus_adapter.cpp",
+      "../input_device_cooperate/src/device_profile_adapter.cpp",
+      "../input_device_cooperate/src/distributed_input_adapter.cpp",
+      "../input_device_cooperate/src/i_input_device_cooperate_state.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_sm.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_state_free.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_state_in.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_state_out.cpp",
+      "../input_device_cooperate/src/input_device_cooperate_util.cpp",
+    ]
+  }
+
+  if (input_feature_keyboard) {
+    sources += [
+      "../key_event_normalize/src/key_event_normalize.cpp",
+      "../key_event_normalize/src/key_unicode_transformation.cpp",
+      "../subscriber/src/key_subscriber_handler.cpp",
+    ]
+    if (input_feature_combination_key) {
+      sources += [ "../key_command/src/key_command_handler.cpp" ]
+    }
+  }
+
+  if (input_feature_mouse || input_feature_touchscreen) {
+    sources += [ "../touch_event_normalize/src/touch_event_normalize.cpp" ]
+    if (input_feature_mouse) {
+      sources += [
+        "../mouse_event_normalize/src/mouse_device_state.cpp",
+        "../mouse_event_normalize/src/mouse_event_normalize.cpp",
+        "../touch_event_normalize/src/gesture_transform_processor.cpp",
+        "../touch_event_normalize/src/touchpad_transform_processor.cpp",
+      ]
+      if (input_feature_pointer_drawing) {
+        sources += [ "../window_manager/src/pointer_drawing_manager.cpp" ]
+      } else {
+        sources += [ "../window_manager/src/i_pointer_drawing_manager.cpp" ]
+      }
+    }
+    if (input_feature_touchscreen) {
+      sources += [
+        "../touch_event_normalize/src/tablet_tool_tranform_processor.cpp",
+        "../touch_event_normalize/src/touch_transform_processor.cpp",
+      ]
+    }
+  }
+  if (input_feature_monitor) {
+    sources += [ "../monitor/src/event_monitor_handler.cpp" ]
+  }
+  if (input_feature_interceptor) {
+    sources += [ "../interceptor/src/event_interceptor_handler.cpp" ]
+  }
+
+  configs = [ ":libmmi_server_config" ]
+
+  cflags = [
+    "-Wno-c++11-narrowing",
+  ]
+
+  libs = [
+    "cjson",
+    "input",
+    "udev",
+  ]
+
+  deps = [
+    "${mmi_path}/frameworks/proxy/ft_build:libmmi-common",
+    "${mmi_path}/service/connect_manager/ft_build:mmi_connect_manager_service",
+    "${mmi_path}/service/filter/ft_build:mmi_event_filter_proxy",
+    "${mmi_path}/util/ft_build:libmmi-util",
+  ]
+
+  public_configs = [
+    "//build/gn/configs/system_libs:c_utils_config",
+    "//build/gn/configs/system_libs:ipc_core_config",
+    "//build/gn/configs/system_libs:hilog_config",
+    "//build/gn/configs/system_libs:hitrace_meter_config",
+    "//build/gn/configs/system_libs:eventhandler_config",
+    "//build/gn/configs/system_libs:safwk_config",
+    "//build/gn/configs/system_libs:syspara_config",
+  ]
+}

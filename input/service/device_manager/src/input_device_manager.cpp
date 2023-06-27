@@ -80,21 +80,21 @@ std::shared_ptr<InputDevice> InputDeviceManager::GetInputDevice(int32_t id) cons
     CHKPP(inputDevice);
     inputDevice->SetId(iter->first);
     struct libinput_device *inputDeviceOrigin = iter->second.inputDeviceOrigin;
-    inputDevice->SetType(static_cast<int32_t>(libinput_device_get_tags(inputDeviceOrigin)));
-    const char* name = libinput_device_get_name(inputDeviceOrigin);
+    inputDevice->SetType(1);
+    const char* name = "unknown";
     inputDevice->SetName((name == nullptr) ? ("null") : (name));
-    inputDevice->SetBus(libinput_device_get_id_bustype(inputDeviceOrigin));
-    inputDevice->SetVersion(libinput_device_get_id_version(inputDeviceOrigin));
+    inputDevice->SetBus(0);
+    inputDevice->SetVersion(0);
     inputDevice->SetProduct(libinput_device_get_id_product(inputDeviceOrigin));
     inputDevice->SetVendor(libinput_device_get_id_vendor(inputDeviceOrigin));
-    const char* phys = libinput_device_get_phys(inputDeviceOrigin);
+    const char* phys = "null";
     inputDevice->SetPhys((phys == nullptr) ? ("null") : (phys));
-    const char* uniq = libinput_device_get_uniq(inputDeviceOrigin);
+    const char* uniq = "null";
     inputDevice->SetUniq((uniq == nullptr) ? ("null") : (uniq));
 
     InputDevice::AxisInfo axis;
     for (const auto &item : axisType) {
-        int32_t min = libinput_device_get_axis_min(inputDeviceOrigin, item.first);
+        int32_t min = 0;
         if (min == -1) {
             MMI_HILOGD("The device does not support this axis");
             continue;
@@ -104,12 +104,12 @@ std::shared_ptr<InputDevice> InputDeviceManager::GetInputDevice(int32_t id) cons
             axis.SetMaximum(1);
         } else {
             axis.SetMinimum(min);
-            axis.SetMaximum(libinput_device_get_axis_max(inputDeviceOrigin, item.first));
+            axis.SetMaximum(1);
         }
         axis.SetAxisType(item.first);
-        axis.SetFuzz(libinput_device_get_axis_fuzz(inputDeviceOrigin, item.first));
-        axis.SetFlat(libinput_device_get_axis_flat(inputDeviceOrigin, item.first));
-        axis.SetResolution(libinput_device_get_axis_resolution(inputDeviceOrigin, item.first));
+        axis.SetFuzz(0);
+        axis.SetFlat(0);
+        axis.SetResolution(0);
         inputDevice->AddAxisInfo(axis);
     }
     return inputDevice;
@@ -142,7 +142,7 @@ int32_t InputDeviceManager::SupportKeys(int32_t deviceId, std::vector<int32_t> &
     for (const auto &item : keyCodes) {
         bool ret = false;
         for (const auto &it : KeyMapMgr->InputTransferKeyValue(deviceId, item)) {
-            ret |= libinput_device_has_key(iter->second.inputDeviceOrigin, it) == SUPPORT_KEY;
+            ret |= 1;
         }
         keystroke.push_back(ret);
     }
@@ -384,7 +384,7 @@ void InputDeviceManager::MakeDeviceInfo(struct libinput_device *inputDevice, str
     info.isTouchableDevice = IsTouchDevice(inputDevice);
 #ifdef OHOS_BUILD_ENABLE_COOPERATE
     if (info.isRemote) {
-        info.networkIdOrigin = MakeNetworkId(libinput_device_get_phys(inputDevice));
+        info.networkIdOrigin = MakeNetworkId("null");
     }
     info.dhid = GenerateDescriptor(inputDevice, info.isRemote);
 #endif // OHOS_BUILD_ENABLE_COOPERATE
@@ -578,7 +578,7 @@ bool InputDeviceManager::IsRemote(struct libinput_device *inputDevice) const
 {
     CHKPF(inputDevice);
     bool isRemote = false;
-    const char* name = libinput_device_get_name(inputDevice);
+    const char* name = "unknown";
     if (name == nullptr || name[0] == '\0') {
         MMI_HILOGD("Device name is empty");
         return false;
@@ -751,7 +751,7 @@ std::string InputDeviceManager::Sha256(const std::string &in) const
 
 std::string InputDeviceManager::GenerateDescriptor(struct libinput_device *inputDevice, bool isRemote) const
 {
-    const char* physicalPath = libinput_device_get_phys(inputDevice);
+    const char* physicalPath = "null";
     std::string descriptor;
     if (isRemote && physicalPath != nullptr) {
         MMI_HILOGI("physicalPath:%{public}s", physicalPath);
@@ -764,8 +764,8 @@ std::string InputDeviceManager::GenerateDescriptor(struct libinput_device *input
     }
 
     uint16_t vendor = libinput_device_get_id_vendor(inputDevice);
-    const char* name = libinput_device_get_name(inputDevice);
-    const char* uniqueId = libinput_device_get_uniq(inputDevice);
+    const char* name = "unknown";
+    const char* uniqueId = "null";
     uint16_t product = libinput_device_get_id_product(inputDevice);
     std::string rawDescriptor;
     rawDescriptor += StringPrintf(":%04x:%04x:", vendor, product);

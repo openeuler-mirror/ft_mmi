@@ -1,0 +1,59 @@
+# Copyright (c) 2021-2022 Huawei Technologies Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/gn/fangtian.gni")
+import("//input/ft_multimodalinput_mini.gni")
+
+config("libmmi_util_public_config") {
+  include_dirs = [
+    "../common/include",
+    "../network/include",
+    "../socket/include",
+    "${mmi_path}/interfaces/native/innerkits/common/include",
+    "${mmi_path}/interfaces/native/innerkits/event/include",
+  ]
+
+  defines = []
+
+  if (input_feature_input_cooperation) {
+    defines += [ "OHOS_BUILD_ENABLE_COOPERATE" ]
+  }
+}
+
+ft_shared_library("libmmi-util") {
+  sources = [
+    "../common/src/input_event_data_transformation.cpp",
+    "../common/src/klog.cpp",
+    "../common/src/util.cpp",
+    "../common/src/uuid.cpp",
+    "../network/src/circle_stream_buffer.cpp",
+    "../network/src/net_packet.cpp",
+    "../network/src/stream_buffer.cpp",
+    "../socket/src/uds_client.cpp",
+    "../socket/src/uds_session.cpp",
+    "../socket/src/uds_socket.cpp",
+  ]
+
+  configs = [
+    ":libmmi_util_public_config",
+  ]
+
+  public_configs = [
+    "//build/gn/configs/system_libs:hilog_config",
+    "//build/gn/configs/system_libs:c_utils_config",
+  ]
+
+  deps = [
+    "${mmi_path}/frameworks/proxy/ft_build:libmmi-common",
+  ]
+}

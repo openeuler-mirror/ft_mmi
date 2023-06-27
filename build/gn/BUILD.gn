@@ -11,21 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-group("ft_engine") {
+group("ft_mmi") {
   deps = [
-    "//display_server/utils/socketpair/ft_build:socketpair",
-    "//display_server/rosen/modules/composer/vsync/ft_build:libvsync",
-    "//display_server/drivers/hal/drm_backend:drm_backend",
-    "//display_server/utils/sync_fence/ft_build:sync_fence",
-    "//display_server/frameworks/surface/ft_build:surface",
-    "//display_server/rosen/modules/render_service_base/ft_build:librender_service_base",
+    "//input/service/ft_build:libmmi-server",
   ]
 }
 
-group("ft_test") {
-  testonly = true
-
-  deps = [
-    "//display_server/drivers/hal/test:drm_backend_test"
-  ]
-}

@@ -16,6 +16,8 @@
 #ifndef DEVICE_OBSERVER_H
 #define DEVICE_OBSERVER_H
 
+#include <memory>
+
 namespace OHOS {
 namespace MMI {
 class IDeviceObserver {
