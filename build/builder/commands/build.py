@@ -52,6 +52,12 @@ class Builder:
             exec_sys_command(['rm', '-f', os.path.join(self.project_dir, 'compile_commands.json')])
             return exec_sys_command(['cp', os.path.join(self.build_output_dir, 'compile_commands.json'), self.project_dir])[0]
 
+        if self.args.install is True:
+            librarys = os.listdir(os.path.join(self.build_output_dir, 'common/common/'))
+            for lib in librarys:
+                if '.so' in lib:
+                    exec_sys_command(['cp', '-rf', os.path.join(self.build_output_dir, 'common/common/', lib), "/usr/lib64/"])[0]
+
         return True
 
     def launch_gn(self) -> bool:

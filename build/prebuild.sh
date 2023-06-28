@@ -88,4 +88,8 @@ sudo cp -fr * /usr/local/include
 cd ${PROJECT_DIR}
 rm -fr ${PROJECT_DIR}/prebuilts/inc
 
+# copy FT sa file to /usr/local/share/ft/
+sudo mkdir -p /usr/local/share/ft
+sudo cp -fr ${PROJECT_DIR}/etc/mmi.xml /usr/local/share/ft/
+
 echo -e "\033[32m[*] Pre-build Done. You need exec 'build.sh'.\033[0m"
