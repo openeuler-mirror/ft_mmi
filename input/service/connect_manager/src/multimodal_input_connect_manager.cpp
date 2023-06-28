@@ -282,17 +282,20 @@ bool MultimodalInputConnectManager::ConnectMultimodalInputService()
         return false;
     }
 
-    std::weak_ptr<MultimodalInputConnectManager> weakPtr = shared_from_this();
-    auto deathCallback = [weakPtr](const wptr<IRemoteObject> &object) {
-        auto sharedPtr = weakPtr.lock();
-        if (sharedPtr != nullptr) {
-            sharedPtr->OnDeath();
-        }
-    };
+    if (sa->IsProxyObject()) {
+        std::weak_ptr<MultimodalInputConnectManager> weakPtr = shared_from_this();
+        auto deathCallback = [weakPtr](const wptr<IRemoteObject> &object) {
+            auto sharedPtr = weakPtr.lock();
+            if (sharedPtr != nullptr) {
+                sharedPtr->OnDeath();
+            }
+        };
 
-    multimodalInputConnectRecipient_ = new (std::nothrow) MultimodalInputConnectDeathRecipient(deathCallback);
-    CHKPF(multimodalInputConnectRecipient_);
-    sa->AddDeathRecipient(multimodalInputConnectRecipient_);
+        multimodalInputConnectRecipient_ = new (std::nothrow) MultimodalInputConnectDeathRecipient(deathCallback);
+        CHKPF(multimodalInputConnectRecipient_);
+        sa->AddDeathRecipient(multimodalInputConnectRecipient_);
+    }
+
     multimodalInputConnectService_ = iface_cast<IMultimodalInputConnect>(sa);
     if (multimodalInputConnectService_ == nullptr) {
         MMI_HILOGE("Get multimodalinput service failed");
