@@ -51,6 +51,10 @@ const std::vector<AccelerateCurve> ACCELERATE_CURVES {
 constexpr double DOUBLE_ZERO = 1e-6;
 constexpr int32_t MIN_SPEED = 1;
 constexpr int32_t MAX_SPEED = 11;
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+constexpr int32_t DEFAULT_DISPLAY_WIDTH = 1000;
+constexpr int32_t DEFAULT_DISPLAY_HEIGHT = 1000;
+#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #ifdef OHOS_BUILD_ENABLE_COOPERATE
 constexpr double PERCENT_CONST = 100.0;
 #endif // OHOS_BUILD_ENABLE_COOPERATE
@@ -99,12 +103,14 @@ int32_t MouseEventNormalize::HandleMotionInner(struct libinput_event_pointer* da
     pointerEvent_->SetButtonId(buttonId_);
 
     InitAbsolution();
+#ifndef FT_BUILD_ENABLE_POINTER_DRAWING
     if (currentDisplayId_ == -1) {
         absolutionX_ = -1;
         absolutionY_ = -1;
         MMI_HILOGI("The currentDisplayId_ is -1");
         return RET_ERR;
     }
+#endif
 
     int32_t ret = HandleMotionAccelerate(data);
     if (ret != RET_OK) {
@@ -120,6 +126,10 @@ int32_t MouseEventNormalize::HandleMotionInner(struct libinput_event_pointer* da
 
 int32_t MouseEventNormalize::HandleMotionAccelerate(struct libinput_event_pointer* data)
 {
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    absolutionX_ = libinput_event_pointer_get_absolute_x_transformed(data, DEFAULT_DISPLAY_WIDTH);
+    absolutionY_ = libinput_event_pointer_get_absolute_y_transformed(data, DEFAULT_DISPLAY_HEIGHT);
+#else
     CHKPR(data, ERROR_NULL_POINTER);
     double dx = libinput_event_pointer_get_dx(data);
     double dy = libinput_event_pointer_get_dy(data);
@@ -136,6 +146,7 @@ int32_t MouseEventNormalize::HandleMotionAccelerate(struct libinput_event_pointe
                dx, dy, correctionX, correctionY, gain);
     absolutionX_ += correctionX;
     absolutionY_ += correctionY;
+#endif
     return RET_OK;
 }
 

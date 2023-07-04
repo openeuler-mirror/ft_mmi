@@ -243,13 +243,13 @@ int32_t MMIService::Init()
     WinMgr->Init(*this);
     MMI_HILOGD("ANRManager Init");
     ANRMgr->Init(*this);
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     MMI_HILOGD("PointerDrawingManager Init");
-#ifdef OHOS_BUILD_ENABLE_POINTER
     if (!IPointerDrawingManager::GetInstance()->Init()) {
         MMI_HILOGE("Pointer draw init failed");
         return POINTER_DRAW_INIT_FAIL;
     }
-#endif // OHOS_BUILD_ENABLE_POINTER
+#endif // OHOS_BUILD_ENABLE_POINTER_DRAWING
     mmiFd_ = EpollCreat(MAX_EVENT_SIZE);
     if (mmiFd_ < 0) {
         MMI_HILOGE("Create epoll failed");
@@ -365,9 +365,9 @@ void MMIService::OnDisconnected(SessionPtr s)
 {
     CHKPV(s);
     MMI_HILOGW("Enter, session desc:%{public}s, fd:%{public}d", s->GetDescript().c_str(), s->GetFd());
-#ifdef OHOS_BUILD_ENABLE_POINTER
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     IPointerDrawingManager::GetInstance()->DeletePointerVisible(s->GetPid());
-#endif // OHOS_BUILD_ENABLE_POINTER
+#endif // OHOS_BUILD_ENABLE_POINTER_DRAWING
 }
 
 int32_t MMIService::SetPointerVisible(bool visible)
@@ -443,28 +443,28 @@ int32_t MMIService::GetPointerSpeed(int32_t &speed)
 int32_t MMIService::SetPointerStyle(int32_t windowId, int32_t pointerStyle)
 {
     CALL_DEBUG_ENTER;
-#ifdef OHOS_BUILD_ENABLE_POINTER
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     int32_t ret = delegateTasks_.PostSyncTask(std::bind(&IPointerDrawingManager::SetPointerStyle,
         IPointerDrawingManager::GetInstance(), GetCallingPid(), windowId, pointerStyle));
     if (ret != RET_OK) {
         MMI_HILOGE("Set pointer style failed,return %{public}d", ret);
         return ret;
     }
-#endif // OHOS_BUILD_ENABLE_POINTER
+#endif // OHOS_BUILD_ENABLE_POINTER_DRAWING
     return RET_OK;
 }
 
 int32_t MMIService::GetPointerStyle(int32_t windowId, int32_t &pointerStyle)
 {
     CALL_DEBUG_ENTER;
-#ifdef OHOS_BUILD_ENABLE_POINTER
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     int32_t ret = delegateTasks_.PostSyncTask(std::bind(&IPointerDrawingManager::GetPointerStyle,
         IPointerDrawingManager::GetInstance(), GetCallingPid(), windowId, std::ref(pointerStyle)));
     if (ret != RET_OK) {
         MMI_HILOGE("Get pointer style failed,return %{public}d", ret);
         return ret;
     }
-#endif // OHOS_BUILD_ENABLE_POINTER
+#endif // OHOS_BUILD_ENABLE_POINTER_DRAWING
     return RET_OK;
 }
 

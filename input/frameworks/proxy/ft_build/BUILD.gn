@@ -79,7 +79,7 @@ ft_shared_library("libmmi-client") {
   defines = []
 
   if (input_feature_pointer_drawing) {
-    defines += [ "OHOS_BUILD_ENABLE_POINTER_DRAWING" ]
+    defines += [ "FT_BUILD_ENABLE_POINTER_DRAWING" ]
   }
   if (input_feature_monitor) {
     defines += [ "OHOS_BUILD_ENABLE_MONITOR" ]
