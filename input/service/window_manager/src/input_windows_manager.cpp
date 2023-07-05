@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <math.h>
+#include <dlfcn.h>
 
 #include "dfx_hisysevent.h"
 #include "i_pointer_drawing_manager.h"
@@ -34,11 +35,27 @@ constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, MMI_LOG_DOMAIN, "InputW
 #ifdef OHOS_BUILD_ENABLE_POINTER
 constexpr int32_t DEFAULT_POINTER_STYLE = 0;
 constexpr size_t MAX_WINDOW_COUNT = 20;
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+using FT_GET_DRAW_INSTANCE = IPointerDrawingManager *(*)();
+constexpr const char *LIB_POINTER_DRAW = "/usr/lib64/libpointerdraw.so";
+constexpr const char *DRAW_GET_INSTANCE_SYM_NAME = "ftGetDrawInstance";
+constexpr int32_t DEFAULT_DISPLAY_WIDTH = 1000;
+constexpr int32_t DEFAULT_DISPLAY_HEIGHT = 1000;
+constexpr int32_t DEFAULT_DISPLAY_ID = 0;
+#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
 } // namespace
 
 InputWindowsManager::InputWindowsManager() {}
-InputWindowsManager::~InputWindowsManager() {}
+InputWindowsManager::~InputWindowsManager()
+{
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    if (libPointerDrawHdl_ != nullptr) {
+        dlclose(libPointerDrawHdl_);
+        libPointerDrawHdl_ = nullptr;
+    }
+#endif
+}
 
 void InputWindowsManager::Init(UDSServer& udsServer)
 {
@@ -47,6 +64,9 @@ void InputWindowsManager::Init(UDSServer& udsServer)
 #ifdef OHOS_BUILD_ENABLE_POINTER
     udsServer_->AddSessionDeletedCallback(std::bind(&InputWindowsManager::OnSessionLost, this, std::placeholders::_1));
     InitMouseDownInfo();
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    OpenPointerDrawManagerHdl();
+#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
 }
 
@@ -58,6 +78,34 @@ void InputWindowsManager::InitMouseDownInfo()
     mouseDownInfo_.defaultHotAreas.clear();
     mouseDownInfo_.pointerHotAreas.clear();
 }
+
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+void InputWindowsManager::OpenPointerDrawManagerHdl()
+{
+    void *libPointerDrawHdl_ = dlopen(LIB_POINTER_DRAW, RTLD_NOW | RTLD_LOCAL);
+    if (libPointerDrawHdl_ == nullptr) {
+        MMI_HILOGE("dlopen fail");
+        return;
+    }
+
+    FT_GET_DRAW_INSTANCE ftGetDrawGetInstance =
+        (FT_GET_DRAW_INSTANCE)(dlsym(libPointerDrawHdl_, DRAW_GET_INSTANCE_SYM_NAME));
+    if (ftGetDrawGetInstance == nullptr) {
+        MMI_HILOGE("dlsym ftGetDrawGetInstance fail");
+        dlclose(libPointerDrawHdl_);
+        libPointerDrawHdl_ = nullptr;
+        return;
+    }
+
+    pointerDrawHdl_ = static_cast<void *>(ftGetDrawGetInstance());
+    if (pointerDrawHdl_ == nullptr) {
+        MMI_HILOGE("get pointerDrawHdl_ fail");
+        dlclose(libPointerDrawHdl_);
+        libPointerDrawHdl_ = nullptr;
+        return;
+    }
+}
+#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
 
 int32_t InputWindowsManager::GetClientFd(std::shared_ptr<PointerEvent> pointerEvent)
@@ -317,10 +365,12 @@ void InputWindowsManager::DispatchPointer(int32_t pointerAction)
 {
     CALL_INFO_TRACE;
     CHKPV(udsServer_);
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     if (!IPointerDrawingManager::GetInstance()->GetMouseDisplayState()) {
         MMI_HILOGD("The mouse is hide");
         return;
     }
+#endif
     if (lastPointerEvent_ == nullptr) {
         SendPointerEvent(pointerAction);
         return;
@@ -867,10 +917,42 @@ void InputWindowsManager::UpdatePointerEvent(int32_t logicalX, int32_t logicalY,
     lastWindowInfo_ = touchWindow;
 }
 
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+void InputWindowsManager::DrawPointer(std::shared_ptr<PointerEvent> pointerEvent)
+{
+    if (pointerDrawHdl_ == nullptr) {
+        MMI_HILOGE("pointerDrawHdl_ null! can not drawPointer");
+        return;
+    }
+
+    int32_t pointerId = pointerEvent->GetPointerId();
+    PointerEvent::PointerItem pointerItem;
+    if (!pointerEvent->GetPointerItem(pointerId, pointerItem)) {
+        MMI_HILOGE("Can't find pointer item, pointer:%{public}d", pointerId);
+        return;
+    }
+
+    if (firstPointerDraw_) {
+        DisplayInfo default_info;
+        default_info.width = DEFAULT_DISPLAY_WIDTH;
+        default_info.height = DEFAULT_DISPLAY_HEIGHT;
+        default_info.id = DEFAULT_DISPLAY_ID;
+        ((IPointerDrawingManager *)pointerDrawHdl_)->UpdateDisplayInfo(default_info);
+        ((IPointerDrawingManager *)pointerDrawHdl_)->Init();
+        firstPointerDraw_ = false;
+    }
+    ((IPointerDrawingManager *)pointerDrawHdl_)->DrawPointer(DEFAULT_DISPLAY_ID,
+        pointerItem.GetDisplayX(), pointerItem.GetDisplayY());
+}
+#endif
+
 int32_t InputWindowsManager::UpdateMouseTarget(std::shared_ptr<PointerEvent> pointerEvent)
 {
     CALL_DEBUG_ENTER;
     CHKPR(pointerEvent, ERROR_NULL_POINTER);
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    DrawPointer(pointerEvent);
+#endif
     auto displayId = pointerEvent->GetTargetDisplayId();
     if (!UpdateDisplayId(displayId)) {
         MMI_HILOGE("This display:%{public}d is not existent", displayId);
@@ -912,6 +994,7 @@ int32_t InputWindowsManager::UpdateMouseTarget(std::shared_ptr<PointerEvent> poi
         MMI_HILOGE("Get pointer style failed, pointerStyleInfo is nullptr");
         return ret;
     }
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     if (!IPointerDrawingManager::GetInstance()->GetMouseDisplayState()) {
         IPointerDrawingManager::GetInstance()->SetMouseDisplayState(true);
         DispatchPointer(PointerEvent::POINTER_ACTION_ENTER_WINDOW);
@@ -921,7 +1004,7 @@ int32_t InputWindowsManager::UpdateMouseTarget(std::shared_ptr<PointerEvent> poi
     IPointerDrawingManager::GetInstance()->OnWindowInfo(info);
     IPointerDrawingManager::GetInstance()->DrawPointer(displayId, pointerItem.GetDisplayX(),
         pointerItem.GetDisplayY(), MOUSE_ICON(mouseStyle));
-
+#endif
     pointerEvent->SetTargetWindowId(touchWindow->id);
     pointerEvent->SetAgentWindowId(touchWindow->agentWindowId);
     int32_t windowX = logicalX - touchWindow->area.x;
@@ -1031,7 +1114,7 @@ int32_t InputWindowsManager::UpdateTouchScreenTarget(std::shared_ptr<PointerEven
                "displayId:%{public}d,TargetWindowId:%{public}d,AgentWindowId:%{public}d",
                touchWindow->pid, logicalX, logicalY, physicalX, physicalY,
                windowX, windowY, displayId, pointerEvent->GetTargetWindowId(), pointerEvent->GetAgentWindowId());
-#ifdef OHOS_BUILD_ENABLE_POINTER
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     if (IPointerDrawingManager::GetInstance()->GetMouseDisplayState()) {
         DispatchPointer(PointerEvent::POINTER_ACTION_LEAVE_WINDOW);
         IPointerDrawingManager::GetInstance()->SetMouseDisplayState(false);
@@ -1158,10 +1241,14 @@ void InputWindowsManager::FindPhysicalDisplay(const DisplayInfo& displayInfo, in
 }
 void InputWindowsManager::UpdateAndAdjustMouseLocation(int32_t& displayId, double& x, double& y)
 {
-    auto displayInfo = GetPhysicalDisplay(displayId);
-    CHKPV(displayInfo);
     int32_t integerX = static_cast<int32_t>(x);
     int32_t integerY = static_cast<int32_t>(y);
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    mouseLocation_.physicalX = integerX;
+    mouseLocation_.physicalY = integerY;
+#endif
+    auto displayInfo = GetPhysicalDisplay(displayId);
+    CHKPV(displayInfo);
     int32_t lastDisplayId = displayId;
     if (!IsInsideDisplay(*displayInfo, integerX, integerY)) {
         FindPhysicalDisplay(*displayInfo, integerX, integerY, displayId);

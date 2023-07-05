@@ -127,6 +127,10 @@ private:
     void FindPhysicalDisplay(const DisplayInfo& displayInfo, int32_t& physicalX,
         int32_t& physicalY, int32_t& displayId);
     void InitMouseDownInfo();
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    void OpenPointerDrawManagerHdl();
+    void DrawPointer(std::shared_ptr<PointerEvent> pointerEvent);
+#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
     void CheckFocusWindowChange(const DisplayGroupInfo &displayGroupInfo);
     void CheckZorderWindowChange(const DisplayGroupInfo &displayGroupInfo);
@@ -140,6 +144,11 @@ private:
     std::shared_ptr<PointerEvent> lastPointerEvent_ { nullptr };
     std::map<int32_t, std::map<int32_t, int32_t>> pointerStyle_;
     WindowInfo mouseDownInfo_;
+#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    void *pointerDrawHdl_ = { nullptr };
+    void *libPointerDrawHdl_ = { nullptr };
+    bool firstPointerDraw_ = { true };
+#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
     DisplayGroupInfo displayGroupInfo_;
     MouseLocation mouseLocation_ = { -1, -1 }; // physical coord
