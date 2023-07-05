@@ -16,6 +16,7 @@
 #define INPUT_WINDOWS_MANAGER_H
 
 #include <vector>
+#include <cstdint>
 
 #include "libinput.h"
 #include "nocopyable.h"
@@ -145,8 +146,7 @@ private:
     std::map<int32_t, std::map<int32_t, int32_t>> pointerStyle_;
     WindowInfo mouseDownInfo_;
 #ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-    void *pointerDrawHdl_ = { nullptr };
-    void *libPointerDrawHdl_ = { nullptr };
+    std::shared_ptr<void> ptrDrawMgrHdl_ { nullptr };
     bool firstPointerDraw_ = { true };
 #endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
