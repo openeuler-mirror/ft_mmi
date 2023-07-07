@@ -64,29 +64,32 @@ python3 ${PROJECT_DIR}/build/builder.py check --install-packages $*
 # =============================================================================
 #
 # download prebuild files
+cd $home
+PREBUILD_DIR="ft_prebuild"
+if [ ! -d ${PREBUILD_DIR} ]; then
+mkdir ${PREBUILD_DIR}
+fi
+cd ${PREBUILD_DIR}
+FT_PREBUILD_DIR=$(pwd)
 
 # install prebuild library
-if [ ! -d ${PROJECT_DIR}/prebuilts/libs ]; then
-git clone https://gitee.com/yanansong/ft_engine_prebuild.git ${PROJECT_DIR}/prebuilts/libs
+if [ ! -d ${FT_PREBUILD_DIR}/libs ]; then
+git clone https://gitee.com/yanansong/ft_engine_prebuild.git -b rpms ${FT_PREBUILD_DIR}/libs
 fi
 
-# copy prebuild library to /usr/lib64
 ARCHNAME=`uname -m`
-cd ${PROJECT_DIR}/prebuilts/libs/library/${ARCHNAME}
-sudo cp -fr *.so /usr/local/lib64
-cd ${PROJECT_DIR}
-rm -fr ${PROJECT_DIR}/prebuilts/libs
 
-# install prebuild include. delete download files
-if [ ! -d ${PROJECT_DIR}/prebuilts/inc ]; then
-git clone https://gitee.com/yanansong/devel_inc.git ${PROJECT_DIR}/prebuilts/inc
+cd ${FT_PREBUILD_DIR}/libs/rpms/${ARCHNAME}
+sudo ./installRPM
+
+# install prebuild include.
+if [ ! -d ${FT_PREBUILD_DIR}/inc ]; then
+git clone https://gitee.com/yanansong/devel_inc.git ${FT_PREBUILD_DIR}/inc
 fi
 
-# copy include files to /usr/local/include. delete download files
-cd ${PROJECT_DIR}/prebuilts/inc
+# copy include files to /usr/include. 
+cd ${FT_PREBUILD_DIR}/inc
 sudo cp -fr * /usr/local/include
-cd ${PROJECT_DIR}
-rm -fr ${PROJECT_DIR}/prebuilts/inc
 
 # copy FT sa file to /usr/local/share/ft/
 sudo mkdir -p /usr/local/share/ft
