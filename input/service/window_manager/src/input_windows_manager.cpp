@@ -38,7 +38,7 @@ constexpr size_t MAX_WINDOW_COUNT = 20;
 #ifdef FT_BUILD_ENABLE_POINTER_DRAWING
 using FUN_PTR_DRAW_GET_INSTANCE = uintptr_t (*)();
 using FUN_PTR_DRAW_INIT = bool (*)(uintptr_t);
-using FUN_PTR_DRAW_UPDATE_DISPLAY_INFO = bool (*)(const uintptr_t, const DisplayInfo&);
+using FUN_PTR_DRAW_UPDATE_DISPLAY_INFO = bool (*)(const uintptr_t, int32_t, int32_t, int32_t);
 using FUN_PTR_DRAW_DRAWING = bool (*)(const uintptr_t, int32_t, int32_t, int32_t);
 using FUN_PTR_DRAW_FREE_DRAWING = void (*)(const uintptr_t);
 constexpr const char *LIB_POINTER_DRAW = "/usr/lib64/libpointerdraw.so";
@@ -992,11 +992,7 @@ void InputWindowsManager::DrawPointer(std::shared_ptr<PointerEvent> pointerEvent
 
     if (firstPointerDraw_) {
         MMI_HILOGD("first Pointer Draw");
-        DisplayInfo default_info;
-        default_info.width = DEFAULT_DISPLAY_WIDTH;
-        default_info.height = DEFAULT_DISPLAY_HEIGHT;
-        default_info.id = DEFAULT_DISPLAY_ID;
-        hdl->ftPtrDrawMgrUpdataDispInfo(hdl->ptrDrawMgrInstance, default_info);
+        hdl->ftPtrDrawMgrUpdataDispInfo(hdl->ptrDrawMgrInstance, DEFAULT_DISPLAY_ID, DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT);
         hdl->ftPtrDrawMgrInit(hdl->ptrDrawMgrInstance);
         firstPointerDraw_ = false;
     }
