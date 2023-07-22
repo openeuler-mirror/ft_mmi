@@ -41,6 +41,7 @@ using FUN_PTR_DRAW_INIT = bool (*)(uintptr_t);
 using FUN_PTR_DRAW_UPDATE_DISPLAY_INFO = bool (*)(const uintptr_t, int32_t, int32_t, int32_t);
 using FUN_PTR_DRAW_DRAWING = bool (*)(const uintptr_t, int32_t, int32_t, int32_t);
 using FUN_PTR_DRAW_FREE_DRAWING = void (*)(const uintptr_t);
+using FUN_PTR_DRAW_GET_SCREEN_SIZE = bool (*)(const uintptr_t, int32_t *, int32_t *);
 constexpr const char *LIB_POINTER_DRAW = "/usr/lib64/libpointerdraw.so";
 constexpr int32_t DEFAULT_DISPLAY_WIDTH = 1000;
 constexpr int32_t DEFAULT_DISPLAY_HEIGHT = 1000;
@@ -55,6 +56,7 @@ typedef struct
     FUN_PTR_DRAW_UPDATE_DISPLAY_INFO ftPtrDrawMgrUpdataDispInfo;
     FUN_PTR_DRAW_DRAWING ftPtrDrawMgrDrawPointer;
     FUN_PTR_DRAW_FREE_DRAWING ftPtrDrawMgrFreeInstance;
+    FUN_PTR_DRAW_GET_SCREEN_SIZE ftPtrDrawMgrGetScreenSize;
 } PtrDrawMgrHdl;
 #endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
@@ -143,6 +145,11 @@ void InputWindowsManager::OpenPointerDrawManagerHdl()
     }
     hdl->ftPtrDrawMgrFreeInstance = (FUN_PTR_DRAW_FREE_DRAWING)dlsym(hdl->dlHandle, "FTPtrDrawMgrFreeInstance");
     if (hdl->ftPtrDrawMgrFreeInstance == nullptr) {
+        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
+        return;
+    }
+    hdl->ftPtrDrawMgrGetScreenSize = (FUN_PTR_DRAW_GET_SCREEN_SIZE)dlsym(hdl->dlHandle, "FTPtrDrawMgrGetScreenSize");
+    if (hdl->ftPtrDrawMgrGetScreenSize == nullptr) {
         MMI_HILOGE("load symbol fail, %{public}s", dlerror());
         return;
     }
@@ -1350,6 +1357,30 @@ MouseLocation InputWindowsManager::GetMouseInfo()
         }
     }
     return mouseLocation_;
+}
+
+bool InputWindowsManager::GetScreenSize(int32_t &width, int32_t &height)
+{
+    if (ptrDrawMgrHdl_ == nullptr) {
+        MMI_HILOGE("ptrDrawMgrHdl_ null! can not get screen size");
+        return false;
+    }
+
+    std::shared_ptr<PtrDrawMgrHdl> hdl = std::static_pointer_cast<PtrDrawMgrHdl>(ptrDrawMgrHdl_);
+    if (hdl->ftPtrDrawMgrGetScreenSize == nullptr) {
+        MMI_HILOGE("error, can not get screen size");
+        return false;
+    }
+
+    int32_t w = -1;
+    int32_t h = -1;
+    if (!hdl->ftPtrDrawMgrGetScreenSize(hdl->ptrDrawMgrInstance, &w, &h)) {
+        MMI_HILOGE("error, get screen size fail");
+        return false;
+    }
+    width = w;
+    height = h;
+    return true;
 }
 #endif // OHOS_BUILD_ENABLE_POINTER
 
