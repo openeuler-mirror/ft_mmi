@@ -127,8 +127,15 @@ int32_t MouseEventNormalize::HandleMotionInner(struct libinput_event_pointer* da
 int32_t MouseEventNormalize::HandleMotionAccelerate(struct libinput_event_pointer* data)
 {
 #ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-    absolutionX_ = libinput_event_pointer_get_absolute_x_transformed(data, DEFAULT_DISPLAY_WIDTH);
-    absolutionY_ = libinput_event_pointer_get_absolute_y_transformed(data, DEFAULT_DISPLAY_HEIGHT);
+    if (screenWidth_ == -1 || screenHeight_ == -1) {
+        if (!WinMgr->GetScreenSize(screenWidth_, screenHeight_)) {
+            MMI_HILOGE("get Screen Size fail");
+        }
+    }
+    int32_t width = (screenWidth_ != -1 ? screenWidth_ : DEFAULT_DISPLAY_WIDTH);
+    int32_t height = (screenHeight_ != -1 ? screenHeight_ : DEFAULT_DISPLAY_HEIGHT);
+    absolutionX_ = libinput_event_pointer_get_absolute_x_transformed(data, width);
+    absolutionY_ = libinput_event_pointer_get_absolute_y_transformed(data, height);
 #else
     CHKPR(data, ERROR_NULL_POINTER);
     double dx = libinput_event_pointer_get_dx(data);

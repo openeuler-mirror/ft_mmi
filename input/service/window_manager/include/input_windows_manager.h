@@ -83,6 +83,7 @@ public:
 #ifdef OHOS_BUILD_ENABLE_POINTER
     void DispatchPointer(int32_t pointerAction);
     void SendPointerEvent(int32_t pointerAction);
+    bool GetScreenSize(int32_t &width, int32_t &height);
 #endif // OHOS_BUILD_ENABLE_POINTER
 
 private:

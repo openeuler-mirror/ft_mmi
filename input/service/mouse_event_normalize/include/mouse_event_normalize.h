@@ -80,6 +80,8 @@ private:
     bool isPressed_ { false };
     int32_t currentDisplayId_ { -1 };
     int32_t speed_ { DEFAULT_SPEED };
+    int32_t screenWidth_ { -1 };
+    int32_t screenHeight_ { -1 };
 };
 
 #define MouseEventHdr ::OHOS::DelayedSingleton<MouseEventNormalize>::GetInstance()
