@@ -35,49 +35,13 @@ constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, MMI_LOG_DOMAIN, "InputW
 #ifdef OHOS_BUILD_ENABLE_POINTER
 constexpr int32_t DEFAULT_POINTER_STYLE = 0;
 constexpr size_t MAX_WINDOW_COUNT = 20;
-#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-using FUN_PTR_DRAW_GET_INSTANCE = uintptr_t (*)();
-using FUN_PTR_DRAW_INIT = bool (*)(uintptr_t);
-using FUN_PTR_DRAW_UPDATE_DISPLAY_INFO = bool (*)(const uintptr_t, int32_t, int32_t, int32_t);
-using FUN_PTR_DRAW_DRAWING = bool (*)(const uintptr_t, int32_t, int32_t, int32_t);
-using FUN_PTR_DRAW_FREE_DRAWING = void (*)(const uintptr_t);
-using FUN_PTR_DRAW_GET_SCREEN_SIZE = bool (*)(const uintptr_t, int32_t *, int32_t *);
-constexpr const char *LIB_POINTER_DRAW = "/usr/lib64/libpointerdraw.so";
-constexpr int32_t DEFAULT_DISPLAY_WIDTH = 1000;
-constexpr int32_t DEFAULT_DISPLAY_HEIGHT = 1000;
 constexpr int32_t DEFAULT_DISPLAY_ID = 0;
-
-typedef struct
-{
-    void *dlHandle;
-    uintptr_t ptrDrawMgrInstance;
-    FUN_PTR_DRAW_GET_INSTANCE ftPtrDrawMgrGetInstance;
-    FUN_PTR_DRAW_INIT ftPtrDrawMgrInit;
-    FUN_PTR_DRAW_UPDATE_DISPLAY_INFO ftPtrDrawMgrUpdataDispInfo;
-    FUN_PTR_DRAW_DRAWING ftPtrDrawMgrDrawPointer;
-    FUN_PTR_DRAW_FREE_DRAWING ftPtrDrawMgrFreeInstance;
-    FUN_PTR_DRAW_GET_SCREEN_SIZE ftPtrDrawMgrGetScreenSize;
-} PtrDrawMgrHdl;
-#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
 } // namespace
 
 InputWindowsManager::InputWindowsManager() {}
 InputWindowsManager::~InputWindowsManager()
 {
-#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-    if (ptrDrawMgrHdl_ != nullptr) {
-        std::shared_ptr<PtrDrawMgrHdl> hdl = std::static_pointer_cast<PtrDrawMgrHdl>(ptrDrawMgrHdl_);
-        if (hdl->ftPtrDrawMgrFreeInstance != nullptr && hdl->ptrDrawMgrInstance != 0) {
-            hdl->ftPtrDrawMgrFreeInstance(hdl->ptrDrawMgrInstance);
-            hdl->ptrDrawMgrInstance = 0;
-        }
-        if (hdl->dlHandle != nullptr) {
-            dlclose(hdl->dlHandle);
-            hdl->dlHandle = nullptr;
-        }
-    }
-#endif
 }
 
 void InputWindowsManager::Init(UDSServer& udsServer)
@@ -87,9 +51,6 @@ void InputWindowsManager::Init(UDSServer& udsServer)
 #ifdef OHOS_BUILD_ENABLE_POINTER
     udsServer_->AddSessionDeletedCallback(std::bind(&InputWindowsManager::OnSessionLost, this, std::placeholders::_1));
     InitMouseDownInfo();
-#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-    OpenPointerDrawManagerHdl();
-#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
 }
 
@@ -101,69 +62,6 @@ void InputWindowsManager::InitMouseDownInfo()
     mouseDownInfo_.defaultHotAreas.clear();
     mouseDownInfo_.pointerHotAreas.clear();
 }
-
-#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-void InputWindowsManager::OpenPointerDrawManagerHdl()
-{
-    if (ptrDrawMgrHdl_ != nullptr) {
-        MMI_HILOGW("has get pointer draw manager handle");
-        return;
-    }
-
-    std::shared_ptr<PtrDrawMgrHdl> hdl = std::make_shared<PtrDrawMgrHdl>();
-    if (hdl == nullptr) {
-        MMI_HILOGE("create PtrDrawMgrHdl fail");
-        return;
-    }
-
-    hdl->dlHandle = dlopen(LIB_POINTER_DRAW, RTLD_NOW | RTLD_LOCAL);
-    if (hdl->dlHandle == nullptr) {
-        MMI_HILOGE("dlopen fail");
-        return;
-    }
-
-    // load func symbol
-    hdl->ftPtrDrawMgrGetInstance = (FUN_PTR_DRAW_GET_INSTANCE)dlsym(hdl->dlHandle, "FTPtrDrawMgrGetInstance");
-    if (hdl->ftPtrDrawMgrGetInstance == nullptr) {
-        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
-        return;
-    }
-    hdl->ftPtrDrawMgrInit = (FUN_PTR_DRAW_INIT)dlsym(hdl->dlHandle, "FTPtrDrawMgrInit");
-    if (hdl->ftPtrDrawMgrInit == nullptr) {
-        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
-        return;
-    }
-    hdl->ftPtrDrawMgrUpdataDispInfo = (FUN_PTR_DRAW_UPDATE_DISPLAY_INFO)dlsym(hdl->dlHandle, "FTPtrDrawMgrUpdataDispInfo");
-    if (hdl->ftPtrDrawMgrUpdataDispInfo == nullptr) {
-        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
-        return;
-    }
-    hdl->ftPtrDrawMgrDrawPointer = (FUN_PTR_DRAW_DRAWING)dlsym(hdl->dlHandle, "FTPtrDrawMgrDrawPointer");
-    if (hdl->ftPtrDrawMgrDrawPointer == nullptr) {
-        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
-        return;
-    }
-    hdl->ftPtrDrawMgrFreeInstance = (FUN_PTR_DRAW_FREE_DRAWING)dlsym(hdl->dlHandle, "FTPtrDrawMgrFreeInstance");
-    if (hdl->ftPtrDrawMgrFreeInstance == nullptr) {
-        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
-        return;
-    }
-    hdl->ftPtrDrawMgrGetScreenSize = (FUN_PTR_DRAW_GET_SCREEN_SIZE)dlsym(hdl->dlHandle, "FTPtrDrawMgrGetScreenSize");
-    if (hdl->ftPtrDrawMgrGetScreenSize == nullptr) {
-        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
-        return;
-    }
-
-    // get instance
-    hdl->ptrDrawMgrInstance = hdl->ftPtrDrawMgrGetInstance();
-    if (hdl->ptrDrawMgrInstance == 0) {
-        MMI_HILOGE("get pointer draw manager instance fail");
-        return;
-    }
-
-    ptrDrawMgrHdl_ = hdl;
-}
-#endif // FT_BUILD_ENABLE_POINTER_DRAWING
 #endif // OHOS_BUILD_ENABLE_POINTER
 
 int32_t InputWindowsManager::GetClientFd(std::shared_ptr<PointerEvent> pointerEvent)
@@ -975,49 +873,30 @@ void InputWindowsManager::UpdatePointerEvent(int32_t logicalX, int32_t logicalY,
     lastWindowInfo_ = touchWindow;
 }
 
-#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-void InputWindowsManager::DrawPointer(std::shared_ptr<PointerEvent> pointerEvent)
+void InputWindowsManager::DrawPointerDefaultStyle(std::shared_ptr<PointerEvent> pointerEvent)
 {
-    if (ptrDrawMgrHdl_ == nullptr) {
-        MMI_HILOGE("ptrDrawMgrHdl_ null! can not drawPointer");
-        return;
-    }
-
+#ifdef OHOS_BUILD_ENABLE_POINTER_DRAWING
     int32_t pointerId = pointerEvent->GetPointerId();
     PointerEvent::PointerItem pointerItem;
     if (!pointerEvent->GetPointerItem(pointerId, pointerItem)) {
         MMI_HILOGE("Can't find pointer item, pointer:%{public}d", pointerId);
         return;
     }
-
-    std::shared_ptr<PtrDrawMgrHdl> hdl = std::static_pointer_cast<PtrDrawMgrHdl>(ptrDrawMgrHdl_);
-    if (hdl->ftPtrDrawMgrUpdataDispInfo == nullptr || hdl->ftPtrDrawMgrInit == nullptr ||
-        hdl->ftPtrDrawMgrDrawPointer == nullptr || hdl->ptrDrawMgrInstance == 0) {
-        MMI_HILOGE("error, can not draw Pointer");
-        return;
-    }
-
-    if (firstPointerDraw_) {
-        MMI_HILOGD("first Pointer Draw");
-        hdl->ftPtrDrawMgrUpdataDispInfo(hdl->ptrDrawMgrInstance, DEFAULT_DISPLAY_ID, DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT);
-        hdl->ftPtrDrawMgrInit(hdl->ptrDrawMgrInstance);
-        firstPointerDraw_ = false;
-    }
-    hdl->ftPtrDrawMgrDrawPointer(hdl->ptrDrawMgrInstance, DEFAULT_DISPLAY_ID,
-        pointerItem.GetDisplayX(), pointerItem.GetDisplayY());
-}
+    IPointerDrawingManager::GetInstance()->DrawPointer(DEFAULT_DISPLAY_ID, pointerItem.GetDisplayX(),
+        pointerItem.GetDisplayY(), MOUSE_ICON(0));
+#else
+    return;
 #endif
+}
 
 int32_t InputWindowsManager::UpdateMouseTarget(std::shared_ptr<PointerEvent> pointerEvent)
 {
     CALL_DEBUG_ENTER;
     CHKPR(pointerEvent, ERROR_NULL_POINTER);
-#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
-    DrawPointer(pointerEvent);
-#endif
     auto displayId = pointerEvent->GetTargetDisplayId();
     if (!UpdateDisplayId(displayId)) {
         MMI_HILOGE("This display:%{public}d is not existent", displayId);
+        DrawPointerDefaultStyle(pointerEvent);
         return RET_ERR;
     }
     pointerEvent->SetTargetDisplayId(displayId);
@@ -1357,30 +1236,6 @@ MouseLocation InputWindowsManager::GetMouseInfo()
         }
     }
     return mouseLocation_;
-}
-
-bool InputWindowsManager::GetScreenSize(int32_t &width, int32_t &height)
-{
-    if (ptrDrawMgrHdl_ == nullptr) {
-        MMI_HILOGE("ptrDrawMgrHdl_ null! can not get screen size");
-        return false;
-    }
-
-    std::shared_ptr<PtrDrawMgrHdl> hdl = std::static_pointer_cast<PtrDrawMgrHdl>(ptrDrawMgrHdl_);
-    if (hdl->ftPtrDrawMgrGetScreenSize == nullptr) {
-        MMI_HILOGE("error, can not get screen size");
-        return false;
-    }
-
-    int32_t w = -1;
-    int32_t h = -1;
-    if (!hdl->ftPtrDrawMgrGetScreenSize(hdl->ptrDrawMgrInstance, &w, &h)) {
-        MMI_HILOGE("error, get screen size fail");
-        return false;
-    }
-    width = w;
-    height = h;
-    return true;
 }
 #endif // OHOS_BUILD_ENABLE_POINTER
 

@@ -62,6 +62,7 @@ config("libmmi_server_config") {
   }
 
   if (input_feature_pointer_drawing) {
+    defines += [ "OHOS_BUILD_ENABLE_POINTER_DRAWING" ]
     defines += [ "FT_BUILD_ENABLE_POINTER_DRAWING" ]
   }
 
@@ -161,6 +162,11 @@ ft_shared_library("libmmi-server") {
         "../touch_event_normalize/src/gesture_transform_processor.cpp",
         "../touch_event_normalize/src/touchpad_transform_processor.cpp",
       ]
+      if (input_feature_pointer_drawing) {
+        sources += [ "../window_manager/src/ft_pointer_drawing_manager.cpp" ]
+      } else {
+        sources += [ "../window_manager/src/i_pointer_drawing_manager.cpp" ]
+      }
     }
     if (input_feature_touchscreen) {
       sources += [

@@ -128,8 +128,8 @@ int32_t MouseEventNormalize::HandleMotionAccelerate(struct libinput_event_pointe
 {
 #ifdef FT_BUILD_ENABLE_POINTER_DRAWING
     if (screenWidth_ == -1 || screenHeight_ == -1) {
-        if (!WinMgr->GetScreenSize(screenWidth_, screenHeight_)) {
-            MMI_HILOGE("get Screen Size fail");
+        if (!IPointerDrawingManager::GetInstance()->GetScreenSize(screenWidth_, screenHeight_)) {
+            MMI_HILOGE("get screen size fail");
         }
     }
     int32_t width = (screenWidth_ != -1 ? screenWidth_ : DEFAULT_DISPLAY_WIDTH);
