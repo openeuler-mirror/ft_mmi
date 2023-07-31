@@ -40,6 +40,8 @@ using FUN_PTR_DRAW_UPDATE_DISPLAY_INFO = bool (*)(const uintptr_t, int32_t, int3
 using FUN_PTR_DRAW_DRAWING = bool (*)(const uintptr_t, int32_t, int32_t, int32_t, int32_t);
 using FUN_PTR_DRAW_FREE_DRAWING = void (*)(const uintptr_t);
 using FUN_PTR_DRAW_GET_SCREEN_SIZE = bool (*)(const uintptr_t, int32_t *, int32_t *);
+using FUN_PTR_DRAW_SET_PTR_VISIBLE = bool (*)(const uintptr_t, int32_t , bool);
+
 constexpr const char *LIB_POINTER_DRAW = "/usr/lib64/libpointerdraw.so";
 constexpr int32_t DEFAULT_DISPLAY_WIDTH = 1000;
 constexpr int32_t DEFAULT_DISPLAY_HEIGHT = 1000;
@@ -55,6 +57,7 @@ typedef struct
     FUN_PTR_DRAW_DRAWING ftPtrDrawMgrDrawPointer;
     FUN_PTR_DRAW_FREE_DRAWING ftPtrDrawMgrFreeInstance;
     FUN_PTR_DRAW_GET_SCREEN_SIZE ftPtrDrawMgrGetScreenSize;
+    FUN_PTR_DRAW_SET_PTR_VISIBLE FTPtrDrawMgrSetPointerVisible;
 } PtrDrawMgrHdl;
 } // namespace MMI
 } // namespace OHOS
@@ -92,7 +95,6 @@ void PointerDrawingManager::DrawPointer(int32_t displayId, int32_t physicalX, in
     lastPhysicalX_ = physicalX;
     lastPhysicalY_ = physicalY;
 
-
     auto it = mouseIcons_.find(MOUSE_ICON(mouseStyle));
     if (it == mouseIcons_.end()) {
         MMI_HILOGE("unsupport mouse style=%{public}d", mouseStyle);
@@ -118,6 +120,8 @@ void PointerDrawingManager::DrawPointer(int32_t displayId, int32_t physicalX, in
         hdl->ftPtrDrawMgrInit(hdl->ptrDrawMgrInstance);
         firstPointerDraw_ = false;
     }
+
+    lastMouseStyle_ = mouseStyle;
     hdl->ftPtrDrawMgrDrawPointer(hdl->ptrDrawMgrInstance, DEFAULT_DISPLAY_ID, physicalX, physicalY, (int32_t)mouseStyle);
     MMI_HILOGD("Leave, display:%{public}d,physicalX:%{public}d,physicalY:%{public}d",
         displayId, physicalX, physicalY);
@@ -173,6 +177,11 @@ void PointerDrawingManager::OpenPointerDrawManagerHdl()
         MMI_HILOGE("load symbol fail, %{public}s", dlerror());
         return;
     }
+    hdl->FTPtrDrawMgrSetPointerVisible = (FUN_PTR_DRAW_SET_PTR_VISIBLE)dlsym(hdl->dlHandle, "FTPtrDrawMgrSetPointerVisible");
+    if (hdl->FTPtrDrawMgrSetPointerVisible == nullptr) {
+        MMI_HILOGE("load symbol fail, %{public}s", dlerror());
+        return;
+    }
 
     // get instance
     hdl->ptrDrawMgrInstance = hdl->ftPtrDrawMgrGetInstance();
@@ -214,6 +223,11 @@ void PointerDrawingManager::FixCursorPosition(int32_t &physicalX, int32_t &physi
     if (physicalY < 0) {
         physicalY = 0;
     }
+
+    if (displayInfo_.width == 0 && imageWidth_ == 0 && displayInfo_.height == 0 && imageHeight_ == 0) {
+        return; // invaild display info, just return
+    }
+
     const int32_t cursorUnit = 16;
     if (displayInfo_.direction == Direction0 || displayInfo_.direction == Direction180) {
         if (physicalX > (displayInfo_.width - imageWidth_ / cursorUnit)) {
@@ -320,6 +334,22 @@ std::shared_ptr<IPointerDrawingManager> IPointerDrawingManager::GetInstance()
 void PointerDrawingManager::UpdatePointerVisible()
 {
     CALL_DEBUG_ENTER;
+    if (ptrDrawMgrHdl_ == nullptr) {
+        MMI_HILOGE("ptrDrawMgrHdl_ null! can not get screen size");
+        return;
+    }
+
+    std::shared_ptr<PtrDrawMgrHdl> hdl = std::static_pointer_cast<PtrDrawMgrHdl>(ptrDrawMgrHdl_);
+    if (hdl->FTPtrDrawMgrSetPointerVisible == nullptr) {
+        MMI_HILOGE("error!");
+        return;
+    }
+
+    MMI_HILOGE("FTPtrDrawMgrSetPointerVisible=%{public}d", IsPointerVisible());
+    hdl->FTPtrDrawMgrSetPointerVisible(hdl->ptrDrawMgrInstance, 0, IsPointerVisible());
+    if (IsPointerVisible()) {
+        DrawPointer(DEFAULT_DISPLAY_ID, lastPhysicalX_, lastPhysicalY_, MOUSE_ICON(lastMouseStyle_));
+    }
 }
 
 bool PointerDrawingManager::IsPointerVisible()
