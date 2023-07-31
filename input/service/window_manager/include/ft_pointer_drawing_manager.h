@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <list>
+#include <map>
 #include "nocopyable.h"
 #include "device_observer.h"
 #include "i_pointer_drawing_manager.h"
@@ -59,9 +60,8 @@ public:
 private:
     void FixCursorPosition(int32_t &physicalX, int32_t &physicalY);
     void UpdatePointerVisible();
-    std::shared_ptr<void> ptrDrawMgrHdl_ { nullptr };
-    bool firstPointerDraw_ = { true };
     void OpenPointerDrawManagerHdl();
+    void InitStyle();
 
 private:
     struct PidInfo {
@@ -80,6 +80,9 @@ private:
     int32_t imageHeight_ { 0 };
     std::list<PidInfo> pidInfos_;
     bool mouseDisplayState_ { false };
+    std::map<MOUSE_ICON, ICON_TYPE> mouseIcons_;
+    std::shared_ptr<void> ptrDrawMgrHdl_ { nullptr };
+    bool firstPointerDraw_ = { true };
 };
 } // namespace MMI
 } // namespace OHOS

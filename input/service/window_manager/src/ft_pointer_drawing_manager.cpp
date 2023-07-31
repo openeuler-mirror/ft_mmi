@@ -63,6 +63,7 @@ namespace OHOS {
 namespace MMI {
 PointerDrawingManager::PointerDrawingManager()
 {
+    InitStyle();
     OpenPointerDrawManagerHdl();
 }
 
@@ -87,9 +88,18 @@ void PointerDrawingManager::DrawPointer(int32_t displayId, int32_t physicalX, in
     CALL_DEBUG_ENTER;
     MMI_HILOGD("Display:%{public}d,physicalX:%{public}d,physicalY:%{public}d,mouseStyle:%{public}d",
         displayId, physicalX, physicalY, mouseStyle);
+    FixCursorPosition(physicalX, physicalY);
     lastPhysicalX_ = physicalX;
     lastPhysicalY_ = physicalY;
 
+
+    auto it = mouseIcons_.find(MOUSE_ICON(mouseStyle));
+    if (it == mouseIcons_.end()) {
+        MMI_HILOGE("unsupport mouse style=%{public}d", mouseStyle);
+        return;
+    }
+
+    AdjustMouseFocus(ICON_TYPE(mouseIcons_[mouseStyle]), physicalX, physicalY);
     if (ptrDrawMgrHdl_ == nullptr) {
         MMI_HILOGE("ptrDrawMgrHdl_ null! can not drawPointer");
         return;
@@ -447,6 +457,52 @@ bool PointerDrawingManager::GetScreenSize(int32_t &width, int32_t &height)
     width = w;
     height = h;
     return true;
+}
+
+void PointerDrawingManager::InitStyle()
+{
+    CALL_DEBUG_ENTER;
+    mouseIcons_ = {
+        {DEFAULT, ANGLE_NW},
+        {EAST, ANGLE_CENTER},
+        {WEST, ANGLE_CENTER},
+        {SOUTH, ANGLE_CENTER},
+        {NORTH, ANGLE_CENTER},
+        {WEST_EAST, ANGLE_CENTER},
+        {NORTH_SOUTH, ANGLE_CENTER},
+        {NORTH_EAST, ANGLE_CENTER},
+        {NORTH_WEST, ANGLE_CENTER},
+        {SOUTH_EAST, ANGLE_CENTER},
+        {SOUTH_WEST, ANGLE_CENTER},
+        {NORTH_EAST_SOUTH_WEST, ANGLE_CENTER},
+        {NORTH_WEST_SOUTH_EAST, ANGLE_CENTER},
+        {CROSS, ANGLE_CENTER},
+        {CURSOR_COPY, ANGLE_NW},
+        {CURSOR_FORBID, ANGLE_NW},
+        {COLOR_SUCKER, ANGLE_SW},
+        {HAND_GRABBING, ANGLE_CENTER},
+        {HAND_OPEN, ANGLE_CENTER},
+        {HAND_POINTING, ANGLE_NW},
+        {HELP, ANGLE_NW},
+        {CURSOR_MOVE, ANGLE_CENTER},
+        {RESIZE_LEFT_RIGHT, ANGLE_CENTER},
+        {RESIZE_UP_DOWN, ANGLE_CENTER},
+        {SCREENSHOT_CHOOSE, ANGLE_CENTER},
+        {SCREENSHOT_CURSOR, ANGLE_CENTER},
+        {TEXT_CURSOR, ANGLE_CENTER},
+        {ZOOM_IN, ANGLE_CENTER},
+        {ZOOM_OUT, ANGLE_CENTER},
+        {MIDDLE_BTN_EAST, ANGLE_CENTER},
+        {MIDDLE_BTN_WEST, ANGLE_CENTER},
+        {MIDDLE_BTN_SOUTH, ANGLE_CENTER},
+        {MIDDLE_BTN_NORTH, ANGLE_CENTER},
+        {MIDDLE_BTN_NORTH_SOUTH, ANGLE_CENTER},
+        {MIDDLE_BTN_NORTH_EAST, ANGLE_CENTER},
+        {MIDDLE_BTN_NORTH_WEST, ANGLE_CENTER},
+        {MIDDLE_BTN_SOUTH_EAST, ANGLE_CENTER},
+        {MIDDLE_BTN_SOUTH_WEST, ANGLE_CENTER},
+        {MIDDLE_BTN_NORTH_SOUTH_WEST_EAST, ANGLE_CENTER},
+    };
 }
 } // namespace MMI
 } // namespace OHOS
