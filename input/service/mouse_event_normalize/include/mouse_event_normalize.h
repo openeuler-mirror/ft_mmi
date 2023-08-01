@@ -55,6 +55,7 @@ public:
 
 private:
     int32_t HandleMotionInner(struct libinput_event_pointer* data);
+    int32_t HandleMotionAbsoluteInner(struct libinput_event_pointer* data);
     int32_t HandleButtonInner(struct libinput_event_pointer* data);
     int32_t HandleAxisInner(struct libinput_event_pointer* data);
     void HandlePostInner(struct libinput_event_pointer* data, int32_t deviceId, PointerEvent::PointerItem &pointerItem);
@@ -63,6 +64,7 @@ private:
     void HandlePostMoveMouse(PointerEvent::PointerItem &pointerItem);
 #endif // OHOS_BUILD_ENABLE_POINTER_DRAWING
     int32_t HandleButtonValueInner(struct libinput_event_pointer* data);
+    int32_t HandleMotionAbsoluteAccelerate(struct libinput_event_pointer* data);
     int32_t HandleMotionAccelerate(struct libinput_event_pointer* data);
     bool GetSpeedGain(double vin, double &gain) const;
     void DumpInner();

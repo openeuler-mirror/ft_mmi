@@ -94,6 +94,33 @@ bool MouseEventNormalize::GetSpeedGain(double vin, double &gain) const
     return true;
 }
 
+int32_t MouseEventNormalize::HandleMotionAccelerate(struct libinput_event_pointer* data)
+{
+    CHKPR(data, ERROR_NULL_POINTER);
+    double dx = libinput_event_pointer_get_dx(data);
+    double dy = libinput_event_pointer_get_dy(data);
+    double vin = (fmax(abs(dx), abs(dy)) + fmin(abs(dx), abs(dy))) / 2.0;
+    double gain { 0.0 };
+    if (!GetSpeedGain(vin, gain)) {
+        MMI_HILOGE("Get speed gain failed");
+        return RET_ERR;
+    }
+    double correctionX = dx * gain;
+    double correctionY = dy * gain;
+    MMI_HILOGD("Get and process the movement coordinates, dx:%{public}lf, dy:%{public}lf,"
+               "correctionX:%{public}lf, correctionY:%{public}lf, gain:%{public}lf",
+               dx, dy, correctionX, correctionY, gain);
+    absolutionX_ += correctionX;
+    absolutionY_ += correctionY;
+    if (absolutionX_ < 0) {
+        absolutionX_ = 0;
+    }
+    absolutionX_ = (absolutionX_ < 0) ? 0 : (absolutionX_ > screenWidth_) ? screenWidth_ : absolutionX_;
+    absolutionY_ = (absolutionY_ < 0) ? 0 : (absolutionY_ > screenHeight_) ? screenHeight_ : absolutionY_;
+
+    return RET_OK;
+}
+
 int32_t MouseEventNormalize::HandleMotionInner(struct libinput_event_pointer* data)
 {
     CALL_DEBUG_ENTER;
@@ -124,9 +151,38 @@ int32_t MouseEventNormalize::HandleMotionInner(struct libinput_event_pointer* da
     return RET_OK;
 }
 
-int32_t MouseEventNormalize::HandleMotionAccelerate(struct libinput_event_pointer* data)
+int32_t MouseEventNormalize::HandleMotionAbsoluteInner(struct libinput_event_pointer* data)
 {
-#ifdef FT_BUILD_ENABLE_POINTER_DRAWING
+    CALL_DEBUG_ENTER;
+    CHKPR(data, ERROR_NULL_POINTER);
+    CHKPR(pointerEvent_, ERROR_NULL_POINTER);
+    pointerEvent_->SetPointerAction(PointerEvent::POINTER_ACTION_MOVE);
+    pointerEvent_->SetButtonId(buttonId_);
+
+    InitAbsolution();
+#ifndef FT_BUILD_ENABLE_POINTER_DRAWING
+    if (currentDisplayId_ == -1) {
+        absolutionX_ = -1;
+        absolutionY_ = -1;
+        MMI_HILOGI("The currentDisplayId_ is -1");
+        return RET_ERR;
+    }
+#endif
+
+    int32_t ret = HandleMotionAbsoluteAccelerate(data);
+    if (ret != RET_OK) {
+        MMI_HILOGE("Failed to handle motion correction");
+        return ret;
+    }
+    WinMgr->UpdateAndAdjustMouseLocation(currentDisplayId_, absolutionX_, absolutionY_);
+    pointerEvent_->SetTargetDisplayId(currentDisplayId_);
+    MMI_HILOGD("Change coordinate: x:%{public}lf, y:%{public}lf, currentDisplayId_:%{public}d",
+        absolutionX_, absolutionY_, currentDisplayId_);
+    return RET_OK;
+}
+
+int32_t MouseEventNormalize::HandleMotionAbsoluteAccelerate(struct libinput_event_pointer* data)
+{
     if (screenWidth_ == -1 || screenHeight_ == -1) {
         if (!IPointerDrawingManager::GetInstance()->GetScreenSize(screenWidth_, screenHeight_)) {
             MMI_HILOGE("get screen size fail");
@@ -136,24 +192,6 @@ int32_t MouseEventNormalize::HandleMotionAccelerate(struct libinput_event_pointe
     int32_t height = (screenHeight_ != -1 ? screenHeight_ : DEFAULT_DISPLAY_HEIGHT);
     absolutionX_ = libinput_event_pointer_get_absolute_x_transformed(data, width);
     absolutionY_ = libinput_event_pointer_get_absolute_y_transformed(data, height);
-#else
-    CHKPR(data, ERROR_NULL_POINTER);
-    double dx = libinput_event_pointer_get_dx(data);
-    double dy = libinput_event_pointer_get_dy(data);
-    double vin = (fmax(abs(dx), abs(dy)) + fmin(abs(dx), abs(dy))) / 2.0;
-    double gain { 0.0 };
-    if (!GetSpeedGain(vin, gain)) {
-        MMI_HILOGE("Get speed gain failed");
-        return RET_ERR;
-    }
-    double correctionX = dx * gain;
-    double correctionY = dy * gain;
-    MMI_HILOGD("Get and process the movement coordinates, dx:%{public}lf, dy:%{public}lf,"
-               "correctionX:%{public}lf, correctionY:%{public}lf, gain:%{public}lf",
-               dx, dy, correctionX, correctionY, gain);
-    absolutionX_ += correctionX;
-    absolutionY_ += correctionY;
-#endif
     return RET_OK;
 }
 
@@ -162,15 +200,18 @@ void MouseEventNormalize::InitAbsolution()
     if (absolutionX_ != -1 || absolutionY_ != -1 || currentDisplayId_ != -1) {
         return;
     }
+
     MMI_HILOGD("Init absolution");
-    auto dispalyGroupInfo = WinMgr->GetDisplayGroupInfo();
-    if (dispalyGroupInfo.displaysInfo.empty()) {
-        MMI_HILOGI("The displayInfo is empty");
-        return;
+    if (screenWidth_ == -1 || screenHeight_ == -1) {
+        if (!IPointerDrawingManager::GetInstance()->GetScreenSize(screenWidth_, screenHeight_)) {
+            MMI_HILOGE("get screen size fail");
+        }
     }
-    currentDisplayId_ = dispalyGroupInfo.displaysInfo[0].id;
-    absolutionX_ = dispalyGroupInfo.displaysInfo[0].width * 1.0 / 2;
-    absolutionY_ = dispalyGroupInfo.displaysInfo[0].height * 1.0 / 2;
+    screenWidth_ = (screenWidth_ != -1 ? screenWidth_ : DEFAULT_DISPLAY_WIDTH);
+    screenHeight_ = (screenHeight_ != -1 ? screenHeight_ : DEFAULT_DISPLAY_HEIGHT);
+    absolutionX_ = screenWidth_ / 2;
+    absolutionY_ = screenHeight_ / 2;
+    currentDisplayId_ = 0;
 }
 
 int32_t MouseEventNormalize::HandleButtonInner(struct libinput_event_pointer* data)
@@ -314,8 +355,10 @@ int32_t MouseEventNormalize::Normalize(struct libinput_event *event)
     const int32_t type = libinput_event_get_type(event);
     switch (type) {
         case LIBINPUT_EVENT_POINTER_MOTION:
-        case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE: {
             result = HandleMotionInner(data);
+            break;
+        case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE: {
+            result = HandleMotionAbsoluteInner(data);
             break;
         }
         case LIBINPUT_EVENT_POINTER_BUTTON: {
