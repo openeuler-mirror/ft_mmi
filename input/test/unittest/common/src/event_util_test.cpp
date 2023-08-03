@@ -30,60 +30,74 @@ constexpr int32_t SEC_TO_NANOSEC = 1000000000;
 void InputEventConsumer::OnInputEvent(std::shared_ptr<KeyEvent> keyEvent) const
 {
     CALL_DEBUG_ENTER;
+    ASSERT_TRUE(keyEvent != nullptr);
     RECV_FLAG flag = TestUtil->GetRecvFlag();
     if (flag == RECV_FLAG::RECV_FOCUS || flag == RECV_FLAG::RECV_MARK_CONSUMED) {
-        keyEvent->MarkProcessed();
-        ASSERT_TRUE(keyEvent != nullptr);
         TestUtil->AddEventDump(TestUtil->DumpInputEvent(keyEvent));
     }
+    keyEvent->MarkProcessed();
 }
 
 void InputEventConsumer::OnInputEvent(std::shared_ptr<PointerEvent> pointerEvent) const
 {
     CALL_DEBUG_ENTER;
     RECV_FLAG flag = TestUtil->GetRecvFlag();
+    ASSERT_TRUE(pointerEvent != nullptr);
     if (flag == RECV_FLAG::RECV_FOCUS || flag == RECV_FLAG::RECV_MARK_CONSUMED) {
-        pointerEvent->MarkProcessed();
-        ASSERT_TRUE(pointerEvent != nullptr);
         auto pointerAction = pointerEvent->GetPointerAction();
         if (pointerAction != PointerEvent::POINTER_ACTION_ENTER_WINDOW &&
             pointerAction != PointerEvent::POINTER_ACTION_LEAVE_WINDOW) {
             TestUtil->AddEventDump(TestUtil->DumpInputEvent(pointerEvent));
         }
     }
+    pointerEvent->MarkProcessed();
 }
 
 void InputEventCallback::OnInputEvent(std::shared_ptr<PointerEvent> pointerEvent) const
 {
     CALL_DEBUG_ENTER;
+    ASSERT_TRUE(pointerEvent != nullptr);
     if (TestUtil->GetRecvFlag() != RECV_FLAG::RECV_MARK_CONSUMED) {
         TestUtil->SetRecvFlag(RECV_FLAG::RECV_MONITOR);
-        ASSERT_TRUE(pointerEvent != nullptr);
         TestUtil->AddEventDump(TestUtil->DumpInputEvent(pointerEvent));
         lastPointerEventId_ = pointerEvent->GetId();
     }
+    pointerEvent->MarkProcessed();
 }
 
 void InputEventCallback::OnInputEvent(std::shared_ptr<KeyEvent> keyEvent) const
 {
     CALL_DEBUG_ENTER;
+    ASSERT_TRUE(keyEvent != nullptr);
     if (TestUtil->GetRecvFlag() != RECV_FLAG::RECV_MARK_CONSUMED) {
         TestUtil->SetRecvFlag(RECV_FLAG::RECV_MONITOR);
-        ASSERT_TRUE(keyEvent != nullptr);
         TestUtil->AddEventDump(TestUtil->DumpInputEvent(keyEvent));
     }
+    keyEvent->MarkProcessed();
 }
 
 void WindowEventConsumer::OnInputEvent(std::shared_ptr<KeyEvent> keyEvent) const
 {
+    ASSERT_TRUE(keyEvent != nullptr);
     threadId_ = GetThisThreadId();
     MMI_HILOGD("Consumer callback keyEvent is threadId:%{public}" PRIu64, threadId_);
+    keyEvent->MarkProcessed();
+}
+
+void WindowEventConsumer::OnInputEvent(std::shared_ptr<AxisEvent> axisEvent) const
+{
+    ASSERT_TRUE(axisEvent != nullptr);
+    threadId_ = GetThisThreadId();
+    MMI_HILOGD("Consumer callback axisEvent is threadId:%{public}" PRIu64, threadId_);
+    axisEvent->MarkProcessed();
 }
 
 void WindowEventConsumer::OnInputEvent(std::shared_ptr<PointerEvent> pointerEvent) const
 {
+    ASSERT_TRUE(pointerEvent != nullptr);
     threadId_ = GetThisThreadId();
     MMI_HILOGD("Consumer callback pointerEvent is threadId:%{public}" PRIu64, threadId_);
+    pointerEvent->MarkProcessed();
 }
 
 uint64_t WindowEventConsumer::GetConsumerThreadId()

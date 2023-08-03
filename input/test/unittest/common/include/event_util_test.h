@@ -25,9 +25,11 @@
 
 #include <gtest/gtest.h>
 
+#ifndef FT_DISBALE_MONITER
 #include "accesstoken_kit.h"
 #include "nativetoken_kit.h"
 #include "token_setproc.h"
+#endif // FT_DISBALE_MONITER
 
 #include "input_manager.h"
 #include "singleton.h"
@@ -35,6 +37,8 @@
 
 namespace OHOS {
 namespace MMI {
+
+#ifndef FT_DISBALE_MONITER
 using namespace Security::AccessToken;
 using Security::AccessToken::AccessTokenID;
 namespace {
@@ -72,6 +76,8 @@ HapInfoParams infoManagerTestInfoParms_ = {
     .appIDDesc = "InputManagerTest"
 };
 } // namespace
+#endif // FT_DISBALE_MONITER
+
 enum class TestScene : int32_t {
     NORMAL_TEST = 0,
     EXCEPTION_TEST,
@@ -140,7 +146,7 @@ class WindowEventConsumer : public IInputEventConsumer {
 public:
     virtual void OnInputEvent(std::shared_ptr<KeyEvent> keyEvent) const override;
     virtual void OnInputEvent(std::shared_ptr<PointerEvent> pointerEvent) const override;
-    virtual void OnInputEvent(std::shared_ptr<AxisEvent> axisEvent) const override {};
+    virtual void OnInputEvent(std::shared_ptr<AxisEvent> axisEvent) const override;
     uint64_t GetConsumerThreadId();
 private:
     mutable uint64_t threadId_ { 0 };
@@ -159,6 +165,7 @@ void TestSimulateInputEvent(EventType& event, const TestScene& testScene = TestS
     EXPECT_TRUE((static_cast<int32_t>(testScene) ^ TestUtil->CompareDump(event)));
 }
 void DumpWindowData(const std::shared_ptr<PointerEvent>& pointerEvent);
+#ifndef FT_DISBALE_MONITER
 class AccessMonitor {
 public:
     AccessMonitor()
@@ -178,6 +185,7 @@ private:
     AccessTokenID currentId_ { 0 };
     AccessTokenID monitorId_ { 0 };
 };
+#endif // FT_DISBALE_MONITER
 } // namespace MMI
 } // namespace OHOS
 

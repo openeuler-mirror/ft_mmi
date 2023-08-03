@@ -17,3 +17,8 @@ group("ft_mmi") {
   ]
 }
 
+group("ft_test") {
+  deps = [
+    "//input/frameworks/proxy/events/test/ft_build:ft_inputManagerTest",
+  ]
+}

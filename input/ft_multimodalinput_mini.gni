@@ -28,6 +28,7 @@ declare_args() {
   input_feature_input_device = false
   input_feature_input_cooperation = false
   input_touchpad_event = false
+  input_test_case = false
 
   if (defined(global_parts_info) &&
       defined(global_parts_info.resourceschedule_resource_schedule_service)) {
@@ -50,3 +51,4 @@ print("input_feature_touchscreen = ${input_feature_touchscreen}")
 print("input_feature_input_device = ${input_feature_input_device}")
 print("input_feature_input_cooperation = ${input_feature_input_cooperation}")
 print("input_touchpad_event = ${input_touchpad_event}")
+print("input_test_case = ${input_test_case}")
