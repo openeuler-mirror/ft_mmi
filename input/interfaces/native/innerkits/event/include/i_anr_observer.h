@@ -22,7 +22,7 @@ class IAnrObserver {
 public:
     IAnrObserver() = default;
     virtual ~IAnrObserver() = default;
-    virtual void OnAnr(int32_t pid) const;
+    virtual void OnAnr(int32_t pid) const = 0;
 };
 } // namespace MMI
 } // namespace OHOS
