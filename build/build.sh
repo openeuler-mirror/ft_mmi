@@ -46,10 +46,10 @@ if [[ "$?" -ne 0 ]]; then
 fi
 
 ARCHNAME=`uname -m`
-BUILD_TYPE = "Debug"
+BUILD_TYPE="Debug"
 
 if [ -d "${PROJECT_DIR}/out/Release" ];then
-    BUILD_TYPE = "Release"
+    BUILD_TYPE="Release"
 fi
 
 if [[ ${ARCHNAME} == "x86_64" ]]; then
