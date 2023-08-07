@@ -45,17 +45,4 @@ if [[ "$?" -ne 0 ]]; then
     exit 1
 fi
 
-ARCHNAME=`uname -m`
-BUILD_TYPE="Debug"
-
-if [ -d "${PROJECT_DIR}/out/Release" ];then
-    BUILD_TYPE="Release"
-fi
-
-if [[ ${ARCHNAME} == "x86_64" ]]; then
-    sudo cp ${PROJECT_DIR}/out/${BUILD_TYPE}/x64/common/common/*.so /usr/lib64/
-elif [[ ${ARCHNAME}  == "aarch64" ]]; then
-    sudo cp ${PROJECT_DIR}/out/${BUILD_TYPE}/aarch64/common/common/*.so /usr/lib64/
-fi
-
 echo -e "\033[0;32m[-] Build done.\033[0m"
