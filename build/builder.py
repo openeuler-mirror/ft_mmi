@@ -22,9 +22,7 @@ from rich.console import Console
 from builder.commands.build import Builder
 from builder.commands.format import Formatter
 from builder.commands.package import Packager
-from builder.common.utils import exec_sys_command
 from builder.common.env_checker import checker
-from builder.common.prebuild import get_machine_info
 from builder.common.logger import logger, LoggerManager
 
 VERSION="0.1.0-rc1"
@@ -206,20 +204,7 @@ def main() -> int:
     try:
         builder.prepare()
 
-        if builder.do_subcommand() is False:
-            return 1
-        else:
-            arch = builder.args.target_cpu
-            if arch == "auto":
-                arch, _ = get_machine_info()
-            build_output_dir = os.path.join(builder.args.project_dir, "out", builder.args.build_type.title(), arch)
-
-            librarys = os.listdir(os.path.join(build_output_dir, 'common/common/'))
-            for lib in librarys:
-                if '.so' in lib:
-                    exec_sys_command(['sudo', 'cp', os.path.join(build_output_dir, 'common/common/', lib), "/usr/lib64/"])[0]
-            return 0
-
+        return 0 if builder.do_subcommand() else 1
     except:
         console.print_exception(show_locals=True)
         return 1
