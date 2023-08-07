@@ -177,6 +177,8 @@ class FtBuilder:
         if (subcommand == "build"):
             builder = Builder(self.args)
             rst = builder.exec_command()
+            if rst is True: 
+                exec_sys_command(['sudo', 'cp', os.path.join(builder.build_output_dir, 'common/common/*.so'), "/usr/lib64/"])
         elif (subcommand == "format"):
             formatter = Formatter(self.args)
             rst = formatter.exec_command()
@@ -205,11 +207,7 @@ def main() -> int:
     try:
         builder.prepare()
 
-        if builder.do_subcommand() is False:
-            return 1
-        else:
-            exec_sys_command(['sudo', 'cp', os.path.join(builder.build_output_dir, 'common/common/*.so'), "/usr/lib64/"])
-            return 0
+        return 0 if builder.do_subcommand() else 1
     except:
         console.print_exception(show_locals=True)
         return 1
