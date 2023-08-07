@@ -204,7 +204,11 @@ def main() -> int:
     try:
         builder.prepare()
 
-        return 0 if builder.do_subcommand() else 1
+        if builder.do_subcommand() is false:
+            return 1
+        else:
+            exec_sys_command(['sudo', 'cp', os.path.join(builder.build_output_dir, 'common/common/*.so'), "/usr/lib64/"])
+            return 0
     except:
         console.print_exception(show_locals=True)
         return 1
