@@ -22,6 +22,7 @@ from rich.console import Console
 from builder.commands.build import Builder
 from builder.commands.format import Formatter
 from builder.commands.package import Packager
+from builder.common.utils import exec_sys_command
 from builder.common.env_checker import checker
 from builder.common.logger import logger, LoggerManager
 
