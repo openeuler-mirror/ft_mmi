@@ -139,7 +139,7 @@ std::string EventUtilTest::GetEventDump()
     return str;
 }
 
-bool EventUtilTest::Init()
+bool EventUtilTest::Init(bool initInputEventConsumer)
 {
     CALL_DEBUG_ENTER;
     if (!WindowUtilsTest::GetInstance()->DrawTestWindow()) {
@@ -147,6 +147,10 @@ bool EventUtilTest::Init()
     }
     sptr<Rosen::Window> window_ = WindowUtilsTest::GetInstance()->GetWindow();
     CHKPF(window_);
+    if (!initInputEventConsumer) {
+        return true;
+    }
+
     auto listener_ = GetPtr<InputEventConsumer>();
     CHKPF(listener_);
     const std::string threadTest = "EventUtilTest";
