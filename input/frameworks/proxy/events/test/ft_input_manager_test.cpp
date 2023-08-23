@@ -257,6 +257,7 @@ TEST_F(InputManagerTest, ListenSimulateInputEvent)
                     return;
                 }
                 pointerId = pointId;
+                buttonId = pointerEvent->GetButtonId();
                 x = pointerItem.GetDisplayX();
                 y = pointerItem.GetDisplayY();
                 sourceType = pointerEvent->GetSourceType();
@@ -265,6 +266,7 @@ TEST_F(InputManagerTest, ListenSimulateInputEvent)
             };
             virtual void OnInputEvent(std::shared_ptr<AxisEvent> axisEvent) const override { };
             mutable int32_t pointerId { -1 };
+            mutable int32_t buttonId { -1 };
             mutable int32_t x { -1 };
             mutable int32_t y { -1 };
             mutable int32_t sourceType { -1 };
@@ -296,6 +298,7 @@ TEST_F(InputManagerTest, ListenSimulateInputEvent)
     EXPECT_EQ(consumer->y, 50);
     EXPECT_EQ(consumer->sourceType, PointerEvent::SOURCE_TYPE_MOUSE);
     EXPECT_EQ(consumer->pointerAction, PointerEvent::POINTER_ACTION_BUTTON_DOWN);
+    EXPECT_EQ(consumer->buttonId, PointerEvent::MOUSE_BUTTON_LEFT);
 }
 
 /**

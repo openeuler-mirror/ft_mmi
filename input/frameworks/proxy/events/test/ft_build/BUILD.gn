@@ -19,6 +19,7 @@ group("ft_inputManagerTest") {
     deps = [
       ":InputManagerTest",
       ":InputManagerAnrTest",
+      ":InputManagerTestStartMove",
     ]
   }
 }
@@ -101,6 +102,34 @@ if (input_test_case) {
       "${mmi_path}/test/unittest/common/src/system_info.cpp",
       "${mmi_path}/test/unittest/common/src/window_utils_test.cpp",
       "../ft_input_manager_test.cpp",
+    ]
+
+    configs = [
+      ":input_manager_test_config",
+    ]
+
+    deps = [
+      "${mmi_path}/frameworks/proxy/ft_build:libmmi-client",
+      "${mmi_path}/util/ft_build:libmmi-util",
+    ]
+
+    libs = [ "gtest",
+        "wm", ]
+
+    public_configs = [
+      "//build/gn/configs/system_libs:hilog_config",
+      "//build/gn/configs/system_libs:ipc_core_config",
+      "//build/gn/configs/system_libs:eventhandler_config",
+      "//build/gn/configs/system_libs:image_config",
+    ]
+  }
+
+  ft_executable("InputManagerTestStartMove") {
+    sources = [
+      "${mmi_path}/test/unittest/common/src/event_util_test.cpp",
+      "${mmi_path}/test/unittest/common/src/system_info.cpp",
+      "${mmi_path}/test/unittest/common/src/window_utils_test.cpp",
+      "../ft_input_manager_test_startmove.cpp",
     ]
 
     configs = [

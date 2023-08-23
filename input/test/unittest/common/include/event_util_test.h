@@ -94,7 +94,7 @@ class EventUtilTest final {
     DECLARE_DELAYED_SINGLETON(EventUtilTest);
 public:
     DISALLOW_COPY_AND_MOVE(EventUtilTest);
-    bool Init();
+    bool Init(bool initInputEventConsumer = true);
     std::string GetEventDump();
     void AddEventDump(std::string eventDump);
     std::string DumpInputEvent(const std::shared_ptr<PointerEvent>& pointerEvent);
