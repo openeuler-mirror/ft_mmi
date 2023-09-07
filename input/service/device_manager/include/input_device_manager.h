@@ -90,6 +90,7 @@ private:
     void MakeDeviceInfo(struct libinput_device *inputDevice, struct InputDeviceInfo& info);
     bool IsMatchKeys(struct libinput_device* device, const std::vector<int32_t> &keyCodes) const;
     void ScanPointerDevice();
+    int32_t GetInputDeviceType(struct libinput_device *inputDevice) const;
 #ifdef OHOS_BUILD_ENABLE_COOPERATE
     std::string MakeNetworkId(const char *phys) const;
     std::string Sha256(const std::string &in) const;

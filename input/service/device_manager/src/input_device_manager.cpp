@@ -67,6 +67,17 @@ constexpr size_t EXPECTED_SUBMATCH { 1 };
 InputDeviceManager::InputDeviceManager() {}
 InputDeviceManager::~InputDeviceManager() {}
 
+int32_t InputDeviceManager::GetInputDeviceType(struct libinput_device *dev) const
+{
+    int32_t type = DEVICE_TYPE_UNKNOWN;
+    if (libinput_device_has_capability(dev, LIBINPUT_DEVICE_CAP_KEYBOARD)) {
+        type = DEVICE_TYPE_KEYBOARD;
+    } else if (libinput_device_has_capability(dev, LIBINPUT_DEVICE_CAP_POINTER)) {
+        type = DEVICE_TYPE_MOUSE;
+    }
+    return type;
+}
+
 std::shared_ptr<InputDevice> InputDeviceManager::GetInputDevice(int32_t id) const
 {
     CALL_DEBUG_ENTER;
@@ -80,8 +91,8 @@ std::shared_ptr<InputDevice> InputDeviceManager::GetInputDevice(int32_t id) cons
     CHKPP(inputDevice);
     inputDevice->SetId(iter->first);
     struct libinput_device *inputDeviceOrigin = iter->second.inputDeviceOrigin;
-    inputDevice->SetType(1);
-    const char* name = "unknown";
+    inputDevice->SetType(GetInputDeviceType(inputDeviceOrigin));
+    const char* name = libinput_device_get_name(inputDeviceOrigin);
     inputDevice->SetName((name == nullptr) ? ("null") : (name));
     inputDevice->SetBus(0);
     inputDevice->SetVersion(0);
