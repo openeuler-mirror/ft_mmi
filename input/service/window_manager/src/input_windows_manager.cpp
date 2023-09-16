@@ -784,6 +784,10 @@ bool InputWindowsManager::UpdateDisplayId(int32_t& displayId)
         MMI_HILOGE("logicalDisplays_is empty");
         return false;
     }
+    if (displayGroupInfo_.windowsInfo.empty()) {
+        MMI_HILOGE("windowsInfo is empty");
+        return false;
+    }
     if (displayId < 0) {
         displayId = displayGroupInfo_.displaysInfo[0].id;
         return true;

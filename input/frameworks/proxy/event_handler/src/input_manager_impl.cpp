@@ -78,8 +78,9 @@ void InputManagerImpl::UpdateDisplayInfo(const DisplayGroupInfo &displayGroupInf
         MMI_HILOGE("Get mmi client is nullptr");
         return;
     }
-    if (displayGroupInfo.windowsInfo.empty() || displayGroupInfo.displaysInfo.empty()) {
-        MMI_HILOGE("The windows info or display info is empty!");
+    if (displayGroupInfo.displaysInfo.empty()) {
+        // Allow no windows on the screen and no longer intercept windowsInfo.empty().
+        MMI_HILOGE("The display info is empty!");
         return;
     }
     for (const auto &item : displayGroupInfo.windowsInfo) {
