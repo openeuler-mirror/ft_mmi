@@ -59,40 +59,4 @@ echo -e "\e[36m[-] Prepare system packages...\e[0m"
 # Check & Install required system packages
 python3 ${PROJECT_DIR}/build/builder.py check --install-packages
 
-# =============================================================================
-# Prebuild
-# =============================================================================
-#
-# download prebuild files
-cd $home
-PREBUILD_DIR="ft_prebuild"
-if [ ! -d ${PREBUILD_DIR} ]; then
-mkdir ${PREBUILD_DIR}
-fi
-cd ${PREBUILD_DIR}
-FT_PREBUILD_DIR=$(pwd)
-
-# install prebuild library
-if [ ! -d ${FT_PREBUILD_DIR}/libs ]; then
-git clone https://gitee.com/yanansong/ft_engine_prebuild.git -b rpms ${FT_PREBUILD_DIR}/libs
-fi
-
-ARCHNAME=`uname -m`
-
-cd ${FT_PREBUILD_DIR}/libs/rpms/${ARCHNAME}
-sudo ./installRPM
-
-# install prebuild include.
-if [ ! -d ${FT_PREBUILD_DIR}/inc ]; then
-git clone https://gitee.com/yanansong/devel_inc.git ${FT_PREBUILD_DIR}/inc
-fi
-
-# copy include files to /usr/include. 
-cd ${FT_PREBUILD_DIR}/inc
-sudo cp -fr * /usr/local/include
-
-# copy FT sa file to /usr/local/share/ft/
-sudo mkdir -p /usr/local/share/ft
-sudo cp -fr ${PROJECT_DIR}/etc/mmi.xml /usr/local/share/ft/
-
 echo -e "\033[32m[*] Pre-build Done. You need exec 'build.sh'.\033[0m"
