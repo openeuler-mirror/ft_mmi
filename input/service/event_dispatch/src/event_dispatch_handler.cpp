@@ -18,7 +18,7 @@
 #include <cinttypes>
 
 #include "dfx_hisysevent.h"
-#include "hitrace_meter.h"
+// #include "hitrace_meter.h"
 
 #include "anr_manager.h"
 #include "bytrace_adapter.h"

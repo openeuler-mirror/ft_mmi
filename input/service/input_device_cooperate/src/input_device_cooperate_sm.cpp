@@ -18,7 +18,7 @@
 #include <cstdio>
 
 #include "device_manager.h"
-#include "hitrace_meter.h"
+// #include "hitrace_meter.h"
 
 #include "bytrace_adapter.h"
 #include "cooperate_event_manager.h"

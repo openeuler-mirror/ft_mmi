@@ -30,4 +30,6 @@ package_deps = [
     "systemd-devel",
     "libinput-devel",
     "cjson-devel",
+    "distributed-utils",
+    "distributed-build",
 ]

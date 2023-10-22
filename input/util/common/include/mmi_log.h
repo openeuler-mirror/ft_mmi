@@ -48,10 +48,13 @@ inline constexpr uint32_t MMI_LOG_DOMAIN = 0xD002800;
 #define MMI_LINE_INFO   MMI_FILE_NAME, __LINE__
 #endif
 
+// #define MMI_HILOGD(fmt, ...) do { \
+//     if (HiLogIsLoggable(OHOS::MMI::MMI_LOG_DOMAIN, LABEL.tag, LOG_DEBUG)) { \
+//         ::OHOS::HiviewDFX::HiLog::Debug(LABEL, MMI_FUNC_FMT fmt, MMI_FUNC_INFO, ##__VA_ARGS__); \
+//     } \
+// } while (0)
 #define MMI_HILOGD(fmt, ...) do { \
-    if (HiLogIsLoggable(OHOS::MMI::MMI_LOG_DOMAIN, LABEL.tag, LOG_DEBUG)) { \
         ::OHOS::HiviewDFX::HiLog::Debug(LABEL, MMI_FUNC_FMT fmt, MMI_FUNC_INFO, ##__VA_ARGS__); \
-    } \
 } while (0)
 #define MMI_HILOGI(fmt, ...) do { \
     ::OHOS::HiviewDFX::HiLog::Info(LABEL, MMI_FUNC_FMT fmt, MMI_FUNC_INFO, ##__VA_ARGS__); \
@@ -107,19 +110,19 @@ public:
     InnerFunctionTracer(HilogFunc logfn, const char* tag, LogLevel level)
         : logfn_ { logfn }, tag_ { tag }, level_ { level }
     {
-        if (HiLogIsLoggable(OHOS::MMI::MMI_LOG_DOMAIN, tag_, level_)) {
+        // if (HiLogIsLoggable(OHOS::MMI::MMI_LOG_DOMAIN, tag_, level_)) {
             if (logfn_ != nullptr) {
                 logfn_("in %{public}s, enter");
             }
-        }
+        // }
     }
     ~InnerFunctionTracer()
     {
-        if (HiLogIsLoggable(OHOS::MMI::MMI_LOG_DOMAIN, tag_, level_)) {
+        // if (HiLogIsLoggable(OHOS::MMI::MMI_LOG_DOMAIN, tag_, level_)) {
             if (logfn_ != nullptr) {
                 logfn_("in %{public}s, leave");
             }
-        }
+        // }
     }
 private:
     HilogFunc logfn_ { nullptr };
