@@ -61,11 +61,12 @@ class Checker:
             configs = toml.load(f)
 
         # Check os version
-        if self.os_id in configs['dependencies']['supported_os'] and self.os_version in configs['dependencies'][self.os_id]['supported_version']:
-            logger.debug(f'Current OS: {self.os_id} {self.os_version}')
-        else:
-            logger.error(f'Unsupported OS: {self.os_id} {self.os_version}')
-            return False
+        logger.debug(f'Current OS: {self.os_id} {self.os_version}')
+        # if self.os_id in configs['dependencies']['supported_os'] and self.os_version in configs['dependencies'][self.os_id]['supported_version']:
+        #     logger.debug(f'Current OS: {self.os_id} {self.os_version}')
+        # else:
+        #     logger.error(f'Unsupported OS: {self.os_id} {self.os_version}')
+        #     return False
 
         # Check packages
         package_deps = configs.get(self.os_id, {}).get(self.os_version, {}).get('package_deps', [])

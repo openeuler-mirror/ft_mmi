@@ -17,7 +17,7 @@
 #include <string>
 
 #include "define_multimodal.h"
-#include "hitrace_meter.h"
+// #include "hitrace_meter.h"
 #include "mmi_log.h"
 
 namespace OHOS {
@@ -45,30 +45,30 @@ constexpr int32_t STOP_ID = 3;
 void BytraceAdapter::StartBytrace(std::shared_ptr<KeyEvent> keyEvent)
 {
     CHKPV(keyEvent);
-    int32_t keyId = keyEvent->GetId();
-    StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onKeyEvent, keyId);
-    HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "service report keyId=" + std::to_string(keyId));
+    // int32_t keyId = keyEvent->GetId();
+    // StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onKeyEvent, keyId);
+    // HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "service report keyId=" + std::to_string(keyId));
 }
 
 void BytraceAdapter::StartBytrace(std::shared_ptr<PointerEvent> pointerEvent, TraceBtn traceBtn)
 {
     CHKPV(pointerEvent);
-    int32_t eventId = pointerEvent->GetId();
-    if (traceBtn == TRACE_START) {
-        if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
-            StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onPointerEvent, eventId);
-            HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "service report pointerId:" + std::to_string(eventId));
-        } else {
-            StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onTouchEvent, eventId);
-            HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "service report touchId:" + std::to_string(eventId));
-        }
-    } else {
-        if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
-            FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onPointerEvent, eventId);
-        } else {
-            FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onTouchEvent, eventId);
-        }
-    }
+    // int32_t eventId = pointerEvent->GetId();
+    // if (traceBtn == TRACE_START) {
+    //     if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
+    //         StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onPointerEvent, eventId);
+    //         HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "service report pointerId:" + std::to_string(eventId));
+    //     } else {
+    //         StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onTouchEvent, eventId);
+    //         HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "service report touchId:" + std::to_string(eventId));
+    //     }
+    // } else {
+    //     if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
+    //         FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onPointerEvent, eventId);
+    //     } else {
+    //         FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onTouchEvent, eventId);
+    //     }
+    // }
 }
 
 void BytraceAdapter::StartBytrace(std::shared_ptr<KeyEvent> key, HandlerType handlerType)
@@ -98,58 +98,58 @@ void BytraceAdapter::StartBytrace(std::shared_ptr<KeyEvent> key, HandlerType han
             break;
         }
     }
-    HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
-    int32_t keyId = key->GetId();
-    FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onKeyEvent, keyId);
+    // HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
+    // int32_t keyId = key->GetId();
+    // FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, onKeyEvent, keyId);
 }
 
 void BytraceAdapter::StartBytrace(std::shared_ptr<KeyEvent> keyEvent, TraceBtn traceBtn, HandlerType handlerType)
 {
     CHKPV(keyEvent);
-    int32_t keyId = keyEvent->GetId();
-    int32_t keyCode = keyEvent->GetKeyCode();
-    if (traceBtn == TRACE_START) {
-        switch (handlerType) {
-            case KEY_INTERCEPT_EVENT: {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, keyId);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client Intercept keyCode:" + std::to_string(keyCode));
-                break;
-            }
-            case KEY_SUBSCRIBE_EVENT: {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventSubscribe, keyId);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client subscribe keyCode:" + std::to_string(keyCode));
-                break;
-            }
-            case KEY_DISPATCH_EVENT: {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventDispatch, keyId);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client dispatch keyCode:" + std::to_string(keyCode));
-                break;
-            }
-            default: {
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "Unknow keycode:" + std::to_string(keyCode));
-                break;
-            }
-        }
-    } else {
-        switch (handlerType) {
-            case KEY_INTERCEPT_EVENT: {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, keyId);
-                break;
-            }
-            case KEY_SUBSCRIBE_EVENT: {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventSubscribe, keyId);
-                break;
-            }
-            case KEY_DISPATCH_EVENT: {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventDispatch, keyId);
-                break;
-            }
-            default: {
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "Unknow keycode:" + std::to_string(keyCode));
-                break;
-            }
-        }
-    }
+    // int32_t keyId = keyEvent->GetId();
+    // int32_t keyCode = keyEvent->GetKeyCode();
+    // if (traceBtn == TRACE_START) {
+    //     switch (handlerType) {
+    //         case KEY_INTERCEPT_EVENT: {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, keyId);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client Intercept keyCode:" + std::to_string(keyCode));
+    //             break;
+    //         }
+    //         case KEY_SUBSCRIBE_EVENT: {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventSubscribe, keyId);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client subscribe keyCode:" + std::to_string(keyCode));
+    //             break;
+    //         }
+    //         case KEY_DISPATCH_EVENT: {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventDispatch, keyId);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client dispatch keyCode:" + std::to_string(keyCode));
+    //             break;
+    //         }
+    //         default: {
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "Unknow keycode:" + std::to_string(keyCode));
+    //             break;
+    //         }
+    //     }
+    // } else {
+    //     switch (handlerType) {
+    //         case KEY_INTERCEPT_EVENT: {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, keyId);
+    //             break;
+    //         }
+    //         case KEY_SUBSCRIBE_EVENT: {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventSubscribe, keyId);
+    //             break;
+    //         }
+    //         case KEY_DISPATCH_EVENT: {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventDispatch, keyId);
+    //             break;
+    //         }
+    //         default: {
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "Unknow keycode:" + std::to_string(keyCode));
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 void BytraceAdapter::StartBytrace(
@@ -157,83 +157,83 @@ void BytraceAdapter::StartBytrace(
 {
     CHKPV(pointerEvent);
     int32_t eventId = pointerEvent->GetId();
-    if (traceBtn == TRACE_START) {
-        if (handlerType == POINT_DISPATCH_EVENT) {
-            if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventDispatch, eventId);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client dispatch pointerId:" + std::to_string(eventId));
-            } else {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventDispatch, eventId);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client dispatch touchId:" + std::to_string(eventId));
-            }
-        } else {
-            if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventIntercept, eventId);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT,
-                    "client Intercept pointerId:" + std::to_string(eventId));
-            } else {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventIntercept, eventId);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client Intercept touchId:" + std::to_string(eventId));
-            }
-        }
-    } else {
-        if (handlerType == POINT_DISPATCH_EVENT) {
-            if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventDispatch, eventId);
-            } else {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventDispatch, eventId);
-            }
-        }
-        if (handlerType == POINT_INTERCEPT_EVENT) {
-            if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventIntercept, eventId);
-            } else {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventIntercept, eventId);
-            }
-        }
-    }
+    // if (traceBtn == TRACE_START) {
+    //     if (handlerType == POINT_DISPATCH_EVENT) {
+    //         if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventDispatch, eventId);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client dispatch pointerId:" + std::to_string(eventId));
+    //         } else {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventDispatch, eventId);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client dispatch touchId:" + std::to_string(eventId));
+    //         }
+    //     } else {
+    //         if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventIntercept, eventId);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT,
+    //                 "client Intercept pointerId:" + std::to_string(eventId));
+    //         } else {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventIntercept, eventId);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, "client Intercept touchId:" + std::to_string(eventId));
+    //         }
+    //     }
+    // } else {
+    //     if (handlerType == POINT_DISPATCH_EVENT) {
+    //         if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventDispatch, eventId);
+    //         } else {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventDispatch, eventId);
+    //         }
+    //     }
+    //     if (handlerType == POINT_INTERCEPT_EVENT) {
+    //         if (pointerEvent->GetSourceType() == PointerEvent::SOURCE_TYPE_MOUSE) {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, pointerEventIntercept, eventId);
+    //         } else {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, touchEventIntercept, eventId);
+    //         }
+    //     }
+    // }
 }
 
 void BytraceAdapter::StartBytrace(TraceBtn traceBtn, EventType eventType)
 {
     std::string checkKeyCode;
-    if (traceBtn == TRACE_START) {
-        switch (eventType) {
-            case START_EVENT: {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, startEvent, START_ID);
-                checkKeyCode = "crossing startId:" + std::to_string(START_ID);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
-                break;
-            }
-            case LAUNCH_EVENT: {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, launchEvent, LAUNCH_ID);
-                checkKeyCode = "crossing launchId:" + std::to_string(LAUNCH_ID);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
-                break;
-            }
-            case STOP_EVENT: {
-                StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, stopEvent, STOP_ID);
-                checkKeyCode = "crossing stopId:" + std::to_string(STOP_ID);
-                HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
-                break;
-            }
-        }
-    } else {
-        switch (eventType) {
-            case START_EVENT: {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, START_ID);
-                break;
-            }
-            case LAUNCH_EVENT: {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, LAUNCH_ID);
-                break;
-            }
-            case STOP_EVENT: {
-                FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, STOP_ID);
-                break;
-            }
-        }
-    }
+    // if (traceBtn == TRACE_START) {
+    //     switch (eventType) {
+    //         case START_EVENT: {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, startEvent, START_ID);
+    //             checkKeyCode = "crossing startId:" + std::to_string(START_ID);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
+    //             break;
+    //         }
+    //         case LAUNCH_EVENT: {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, launchEvent, LAUNCH_ID);
+    //             checkKeyCode = "crossing launchId:" + std::to_string(LAUNCH_ID);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
+    //             break;
+    //         }
+    //         case STOP_EVENT: {
+    //             StartAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, stopEvent, STOP_ID);
+    //             checkKeyCode = "crossing stopId:" + std::to_string(STOP_ID);
+    //             HITRACE_METER_NAME(HITRACE_TAG_MULTIMODALINPUT, checkKeyCode);
+    //             break;
+    //         }
+    //     }
+    // } else {
+    //     switch (eventType) {
+    //         case START_EVENT: {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, START_ID);
+    //             break;
+    //         }
+    //         case LAUNCH_EVENT: {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, LAUNCH_ID);
+    //             break;
+    //         }
+    //         case STOP_EVENT: {
+    //             FinishAsyncTrace(HITRACE_TAG_MULTIMODALINPUT, keyEventIntercept, STOP_ID);
+    //             break;
+    //         }
+    //     }
+    // }
 }
 } // namespace MMI
 } // namespace OHOS

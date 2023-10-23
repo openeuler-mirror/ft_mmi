@@ -205,7 +205,7 @@ ft_shared_library("libmmi-server") {
     "//build/gn/configs/system_libs:c_utils_config",
     "//build/gn/configs/system_libs:ipc_core_config",
     "//build/gn/configs/system_libs:hilog_config",
-    "//build/gn/configs/system_libs:hitrace_meter_config",
+    #"//build/gn/configs/system_libs:hitrace_meter_config",
     "//build/gn/configs/system_libs:eventhandler_config",
     "//build/gn/configs/system_libs:safwk_config",
     "//build/gn/configs/system_libs:syspara_config",
