@@ -1,0 +1,24 @@
+#Instructions: 2 parameters are required to install the header file to /usr/include/
+#              Param1: relative path of header file
+#              Param2: installation directory name (if this directory does not exist,
+#                      it will be automatically created in /usr/include/)
+#Example: install test/test1.h to /usr/include/test/test1.h,  add: test/test1.h   /usr/include/test/
+
+etc/mmi.xml /usr/local/share/ft/mmi.xml
+
+input/interfaces/native/innerkits/proxy/include/display_info.h                        /usr/include/mmi/
+input/interfaces/native/innerkits/proxy/include/input_manager.h                       /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/axis_event.h                          /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/cooperation_message.h                 /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/i_anr_observer.h                      /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/i_input_device_cooperate_listener.h   /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/i_input_device_listener.h             /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/i_input_event_consumer.h              /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/input_device.h                        /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/input_event.h                         /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/key_event.h                           /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/key_option.h                          /usr/include/mmi/
+input/interfaces/native/innerkits/event/include/pointer_event.h                       /usr/include/mmi/
+input/util/common/include/error_multimodal.h               /usr/include/mmi/
+input/util/common/include/proto.h                          /usr/include/mmi/
+input/util/common/include/struct_multimodal.h              /usr/include/mmi/
