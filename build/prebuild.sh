@@ -72,24 +72,7 @@ fi
 cd ${PREBUILD_DIR}
 FT_PREBUILD_DIR=$(pwd)
 
-# install prebuild library
-if [ ! -d ${FT_PREBUILD_DIR}/libs ]; then
-git clone https://gitee.com/yanansong/ft_engine_prebuild.git -b rpms ${FT_PREBUILD_DIR}/libs
-fi
-
 ARCHNAME=`uname -m`
-
-cd ${FT_PREBUILD_DIR}/libs/rpms/${ARCHNAME}
-sudo ./installRPM
-
-# install prebuild include.
-if [ ! -d ${FT_PREBUILD_DIR}/inc ]; then
-git clone https://gitee.com/yanansong/devel_inc.git ${FT_PREBUILD_DIR}/inc
-fi
-
-# copy include files to /usr/include. 
-cd ${FT_PREBUILD_DIR}/inc
-sudo cp -fr * /usr/local/include
 
 # copy FT sa file to /usr/local/share/ft/
 sudo mkdir -p /usr/local/share/ft
